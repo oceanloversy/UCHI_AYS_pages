@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PREDICTION OF SEA CONDITIONS BY UCHI in Ariake&Yatsushiro Sea</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
+<style>
+  body{font-family:sans-serif;margin:0;background:#f3f7fb}
+  header{background:#003366;color:#fff;padding:14px;text-align:center;font-size:1.2rem}
+  .controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:10px;background:#e6f0fb}
+  .controls button, .controls select{padding:8px 12px;border-radius:6px;border:none;background:#007acc;color:white}
+  .wrap{max-width:1024px;margin:12px auto;padding:8px}
+  .viewer{margin-top:10px}
+  .slider img, .slider video{width:100%;height:auto;border-radius:6px}
+  @media (max-width:600px){
+    header{font-size:1rem}
+    .controls{padding:8px}
+  }
+  .timebar{margin-top:8px}
+</style>
+</head>
+<body>
+<header>PREDICTION OF SEA CONDITIONS BY UCHI in Ariake&Yatsushiro Sea</header>
+<div class="controls">
+  <button onclick="selectLayer('0')">Surface</button>
+  <button onclick="selectLayer('B')">Bottom</button>
+  <select id="varSelect" onchange="reloadOptions()">
+    <option value="SST">SST</option>
+    <option value="SSS">SSS</option>
+    <option value="SVel">SVel</option>
+  </select>
+  <select id="dateSelect" onchange="jumpTo(this.value)"></select>
+  <button onclick="prevImage()">Prev</button>
+  <button onclick="nextImage()">Next</button>
+  <button onclick="playVideo()">Play Video</button>
+</div>
+
+<div class="wrap">
+  <div id="imageContainer">
+    <div class="slider" id="mainSlider"></div>
+  </div>
+  <div id="videoContainer" style="display:none">
+    <video id="mainVideo" controls preload="metadata" style="width:100%;max-height:80vh"></video>
+    <div class="timebar"><input id="timeSlider" type="range" min="0" max="0" value="0" style="width:100%"></div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<script>
+const blocks = {"TEM": {"S": ["WebPages/Images&MV/images/TEM/202510170100_SST.png", "WebPages/Images&MV/images/TEM/202510170200_SST.png", "WebPages/Images&MV/images/TEM/202510170300_SST.png", "WebPages/Images&MV/images/TEM/202510170400_SST.png", "WebPages/Images&MV/images/TEM/202510170500_SST.png", "WebPages/Images&MV/images/TEM/202510170600_SST.png", "WebPages/Images&MV/images/TEM/202510170700_SST.png", "WebPages/Images&MV/images/TEM/202510170800_SST.png", "WebPages/Images&MV/images/TEM/202510170900_SST.png", "WebPages/Images&MV/images/TEM/202510171000_SST.png", "WebPages/Images&MV/images/TEM/202510171100_SST.png", "WebPages/Images&MV/images/TEM/202510171200_SST.png", "WebPages/Images&MV/images/TEM/202510171300_SST.png", "WebPages/Images&MV/images/TEM/202510171400_SST.png", "WebPages/Images&MV/images/TEM/202510171500_SST.png", "WebPages/Images&MV/images/TEM/202510171600_SST.png", "WebPages/Images&MV/images/TEM/202510171700_SST.png", "WebPages/Images&MV/images/TEM/202510171800_SST.png"], "B": ["WebPages/Images&MV/images/TEM/202510170100_BT.png", "WebPages/Images&MV/images/TEM/202510170200_BT.png", "WebPages/Images&MV/images/TEM/202510170300_BT.png", "WebPages/Images&MV/images/TEM/202510170400_BT.png", "WebPages/Images&MV/images/TEM/202510170500_BT.png", "WebPages/Images&MV/images/TEM/202510170600_BT.png", "WebPages/Images&MV/images/TEM/202510170700_BT.png", "WebPages/Images&MV/images/TEM/202510170800_BT.png", "WebPages/Images&MV/images/TEM/202510170900_BT.png", "WebPages/Images&MV/images/TEM/202510171000_BT.png", "WebPages/Images&MV/images/TEM/202510171100_BT.png", "WebPages/Images&MV/images/TEM/202510171200_BT.png", "WebPages/Images&MV/images/TEM/202510171300_BT.png", "WebPages/Images&MV/images/TEM/202510171400_BT.png", "WebPages/Images&MV/images/TEM/202510171500_BT.png", "WebPages/Images&MV/images/TEM/202510171600_BT.png", "WebPages/Images&MV/images/TEM/202510171700_BT.png", "WebPages/Images&MV/images/TEM/202510171800_BT.png"]}, "SAL": {"S": ["WebPages/Images&MV/images/SAL/202510170100_SSS.png", "WebPages/Images&MV/images/SAL/202510170200_SSS.png", "WebPages/Images&MV/images/SAL/202510170300_SSS.png", "WebPages/Images&MV/images/SAL/202510170400_SSS.png", "WebPages/Images&MV/images/SAL/202510170500_SSS.png", "WebPages/Images&MV/images/SAL/202510170600_SSS.png", "WebPages/Images&MV/images/SAL/202510170700_SSS.png", "WebPages/Images&MV/images/SAL/202510170800_SSS.png", "WebPages/Images&MV/images/SAL/202510170900_SSS.png", "WebPages/Images&MV/images/SAL/202510171000_SSS.png", "WebPages/Images&MV/images/SAL/202510171100_SSS.png", "WebPages/Images&MV/images/SAL/202510171200_SSS.png", "WebPages/Images&MV/images/SAL/202510171300_SSS.png", "WebPages/Images&MV/images/SAL/202510171400_SSS.png", "WebPages/Images&MV/images/SAL/202510171500_SSS.png", "WebPages/Images&MV/images/SAL/202510171600_SSS.png", "WebPages/Images&MV/images/SAL/202510171700_SSS.png", "WebPages/Images&MV/images/SAL/202510171800_SSS.png"], "B": ["WebPages/Images&MV/images/SAL/202510170100_BS.png", "WebPages/Images&MV/images/SAL/202510170200_BS.png", "WebPages/Images&MV/images/SAL/202510170300_BS.png", "WebPages/Images&MV/images/SAL/202510170400_BS.png", "WebPages/Images&MV/images/SAL/202510170500_BS.png", "WebPages/Images&MV/images/SAL/202510170600_BS.png", "WebPages/Images&MV/images/SAL/202510170700_BS.png", "WebPages/Images&MV/images/SAL/202510170800_BS.png", "WebPages/Images&MV/images/SAL/202510170900_BS.png", "WebPages/Images&MV/images/SAL/202510171000_BS.png", "WebPages/Images&MV/images/SAL/202510171100_BS.png", "WebPages/Images&MV/images/SAL/202510171200_BS.png", "WebPages/Images&MV/images/SAL/202510171300_BS.png", "WebPages/Images&MV/images/SAL/202510171400_BS.png", "WebPages/Images&MV/images/SAL/202510171500_BS.png", "WebPages/Images&MV/images/SAL/202510171600_BS.png", "WebPages/Images&MV/images/SAL/202510171700_BS.png", "WebPages/Images&MV/images/SAL/202510171800_BS.png"]}, "VEL": {"S": ["WebPages/Images&MV/images/VEL/202510170100_SVel.png", "WebPages/Images&MV/images/VEL/202510170200_SVel.png", "WebPages/Images&MV/images/VEL/202510170300_SVel.png", "WebPages/Images&MV/images/VEL/202510170400_SVel.png", "WebPages/Images&MV/images/VEL/202510170500_SVel.png", "WebPages/Images&MV/images/VEL/202510170600_SVel.png", "WebPages/Images&MV/images/VEL/202510170700_SVel.png", "WebPages/Images&MV/images/VEL/202510170800_SVel.png", "WebPages/Images&MV/images/VEL/202510170900_SVel.png", "WebPages/Images&MV/images/VEL/202510171000_SVel.png", "WebPages/Images&MV/images/VEL/202510171100_SVel.png", "WebPages/Images&MV/images/VEL/202510171200_SVel.png", "WebPages/Images&MV/images/VEL/202510171300_SVel.png", "WebPages/Images&MV/images/VEL/202510171400_SVel.png", "WebPages/Images&MV/images/VEL/202510171500_SVel.png", "WebPages/Images&MV/images/VEL/202510171600_SVel.png", "WebPages/Images&MV/images/VEL/202510171700_SVel.png", "WebPages/Images&MV/images/VEL/202510171800_SVel.png"], "B": ["WebPages/Images&MV/images/VEL/202510170100_BVel.png", "WebPages/Images&MV/images/VEL/202510170200_BVel.png", "WebPages/Images&MV/images/VEL/202510170300_BVel.png", "WebPages/Images&MV/images/VEL/202510170400_BVel.png", "WebPages/Images&MV/images/VEL/202510170500_BVel.png", "WebPages/Images&MV/images/VEL/202510170600_BVel.png", "WebPages/Images&MV/images/VEL/202510170700_BVel.png", "WebPages/Images&MV/images/VEL/202510170800_BVel.png", "WebPages/Images&MV/images/VEL/202510170900_BVel.png", "WebPages/Images&MV/images/VEL/202510171000_BVel.png", "WebPages/Images&MV/images/VEL/202510171100_BVel.png", "WebPages/Images&MV/images/VEL/202510171200_BVel.png", "WebPages/Images&MV/images/VEL/202510171300_BVel.png", "WebPages/Images&MV/images/VEL/202510171400_BVel.png", "WebPages/Images&MV/images/VEL/202510171500_BVel.png", "WebPages/Images&MV/images/VEL/202510171600_BVel.png", "WebPages/Images&MV/images/VEL/202510171700_BVel.png", "WebPages/Images&MV/images/VEL/202510171800_BVel.png"]}};   // inserted by generate_index.py
+const vids = {"SST": "WebPages/Images&MV/mv/SST.mp4", "BT": "WebPages/Images&MV/mv/BT.mp4", "SSS": "WebPages/Images&MV/mv/SSS.mp4", "BS": "WebPages/Images&MV/mv/BS.mp4", "SVel": "WebPages/Images&MV/mv/SVel.mp4", "BVel": "WebPages/Images&MV/mv/BVel.mp4"};
+let currentLayer = '0';
+let currentVar = 'SST';
+let imagesList = [];
+
+function selectLayer(layer){ currentLayer = layer; reloadOptions(); }
+function reloadOptions(){
+  currentVar = document.getElementById('varSelect').value;
+  imagesList = (blocks[currentVar] && blocks[currentVar][currentLayer]) ? blocks[currentVar][currentLayer] : [];
+  const dateSel = document.getElementById('dateSelect');
+  dateSel.innerHTML = '';
+  imagesList.forEach((p, idx) => {
+    const name = p.split('/').pop();
+    const ts = name.split('_')[0];
+    const opt = document.createElement('option');
+    opt.value = idx;
+    opt.text = ts;
+    dateSel.appendChild(opt);
+  });
+  renderSlider();
+}
+function renderSlider(){
+  if($('#mainSlider').hasClass('slick-initialized')){ $('#mainSlider').slick('unslick'); }
+  $('#mainSlider').empty();
+  imagesList.forEach(p => { $('#mainSlider').append(`<div><img src="${p}" alt=""></div>`); });
+  if(imagesList.length>0){
+    $('#mainSlider').slick({ dots:true, arrows:true, adaptiveHeight:true });
+    $('#mainSlider').slick('slickGoTo',0);
+    document.getElementById('imageContainer').style.display='block';
+    document.getElementById('videoContainer').style.display='none';
+  } else {
+    $('#mainSlider').append('<div><p>No images</p></div>');
+    $('#mainSlider').slick({dots:true});
+  }
+}
+function prevImage(){ $('#mainSlider').slick('slickPrev'); }
+function nextImage(){ $('#mainSlider').slick('slickNext'); }
+
+function playVideo(){
+  const key = currentVar + '_' + currentLayer;
+  if(vids[key]){
+    const vurl = vids[key];
+    const v = document.getElementById('mainVideo');
+    v.src = vurl;
+    document.getElementById('videoContainer').style.display='block';
+    document.getElementById('imageContainer').style.display='none';
+    v.play();
+    setupTimebar(v);
+  } else { alert('No Movies'); }
+}
+
+function setupTimebar(video){
+  const slider = document.getElementById('timeSlider');
+  slider.max = Math.floor(video.duration*10) || 0;
+  slider.oninput = function(){ video.currentTime = this.value/10; }
+  video.ontimeupdate = function(){ slider.value = Math.floor(video.currentTime*10); }
+}
+
+// called from date select
+function jumpTo(idx){
+  $('#mainSlider').slick('slickGoTo', parseInt(idx));
+}
+
+window.onload = function(){ reloadOptions(); }
+</script>
+</body>
+</html>
