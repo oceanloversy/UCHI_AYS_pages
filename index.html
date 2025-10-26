@@ -6,171 +6,229 @@
 <title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
 <style>
   body {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    margin: 0; padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
     background-color: #f8f9fa;
+    margin: 0;
     text-align: center;
   }
   header {
-    background-color: #005f8f;
+    background: linear-gradient(90deg, #004e92, #000428);
     color: white;
-    padding: 10px 0;
+    padding: 1.2rem;
     font-size: 1.4rem;
     font-weight: bold;
   }
-  main {
-    margin: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .section {
-    background: white;
-    padding: 15px;
-    margin: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  .container {
+    margin: 1.5rem auto;
     width: 95%;
-    max-width: 800px;
+    max-width: 900px;
   }
   select, button {
-    padding: 6px 10px;
-    margin: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    margin: 0.5rem;
+    padding: 0.5rem;
     font-size: 1rem;
-  }
-  button {
-    background-color: #005f8f;
-    color: white;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #0077b6;
   }
   img, video {
     width: 100%;
     height: auto;
-    margin-top: 10px;
+    max-height: 80vh;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background: white;
+  }
+  .btn-group {
+    margin-top: 0.8rem;
+  }
+  #mode-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
     border-radius: 6px;
+    padding: 0.6rem 1rem;
+    margin: 0.3rem;
+    cursor: pointer;
   }
-  #image-controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  footer {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #555;
+  #mode-buttons button.active {
+    background-color: #0056b3;
   }
 </style>
 </head>
+
 <body>
+<header>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</header>
 
-<header>
-  PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA
-</header>
+<div class="container">
+  <div id="mode-buttons">
+    <button id="imageModeBtn" class="active">静止画像</button>
+    <button id="videoModeBtn">動画</button>
+  </div>
 
-<main>
-
-  <!-- 静止画像セクション -->
-  <div class="section" id="images-section">
-    <h2>Sea Condition Maps (Static)</h2>
+  <!-- 静止画像モード -->
+  <div id="imageMode">
     <div>
-      <label>Parameter:</label>
-      <select id="var-select">
-        <option value="SSS">SSS (Surface Salinity)</option>
-        <option value="BS">BS (Bottom Salinity)</option>
-        <option value="SST">SST (Surface Temperature)</option>
-        <option value="BT">BT (Bottom Temperature)</option>
-        <option value="SVel">SVel (Surface Velocity)</option>
-        <option value="BVel">BVel (Bottom Velocity)</option>
+      <label>項目：</label>
+      <select id="imageVar">
+        <option value="SSS">SSS</option>
+        <option value="BS">BS</option>
+        <option value="SST">SST</option>
+        <option value="BT">BT</option>
+        <option value="SVel">SVel</option>
+        <option value="BVel">BVel</option>
+      </select>
+
+      <label>日時：</label>
+      <select id="imageTime"></select>
+    </div>
+
+    <div class="btn-group">
+      <button id="prevBtn">PREV</button>
+      <button id="nextBtn">NEXT</button>
+    </div>
+
+    <div>
+      <img id="displayImage" src="" alt="Sea Condition Image">
+    </div>
+  </div>
+
+  <!-- 動画モード -->
+  <div id="videoMode" style="display:none;">
+    <div>
+      <label>項目：</label>
+      <select id="videoVar">
+        <option value="SSS">SSS</option>
+        <option value="BS">BS</option>
+        <option value="SST">SST</option>
+        <option value="BT">BT</option>
+        <option value="SVel">SVel</option>
+        <option value="BVel">BVel</option>
       </select>
     </div>
+
     <div>
-      <label>Date & Time:</label>
-      <select id="time-select"></select>
+      <video id="displayVideo" controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
-    <div id="image-controls">
-      <button id="prev-btn">PREV</button>
-      <button id="next-btn">NEXT</button>
-    </div>
-    <img id="display-img" src="" alt="Sea Condition Map">
   </div>
-
-  <!-- 動画セクション -->
-  <div class="section" id="videos-section">
-    <h2>Time-Lapse Movies</h2>
-    <div>
-      <label>Parameter:</label>
-      <select id="video-select"></select>
-    </div>
-    <video id="display-video" controls></video>
-  </div>
-
-</main>
-
-<footer>
-  © 2025 UCHI Ocean Simulation Project — Ariake & Yatsushiro Sea
-</footer>
+</div>
 
 <script>
-let imageData = {};
-let videoData = [];
-let currentVar = "SSS";
-let currentIndex = 0;
+// =========================
+// ファイル構成設定
+// =========================
+const folderMap = {
+  'SSS': 'SAL',
+  'BS':  'SAL',
+  'SST': 'TEM',
+  'BT':  'TEM',
+  'SVel':'VEL',
+  'BVel':'VEL'
+};
 
-// -----------------------------
-// JSON読み込み
-// -----------------------------
-async function loadJSON() {
-  const imgRes = await fetch("image_list.json");
-  imageData = await imgRes.json();
+// =========================
+// 静止画像モード
+// =========================
+const imageVar = document.getElementById('imageVar');
+const imageTime = document.getElementById('imageTime');
+const displayImage = document.getElementById('displayImage');
+let imageFiles = [];
 
-  const vidRes = await fetch("video_list.json");
-  videoData = await vidRes.json();
+// ファイルリスト読み込み（generate_index.pyで生成されたJSONを使用）
+async function loadImageList() {
+  try {
+    const res = await fetch('image_list.json'); // JSONはgenerate_index.pyで生成
+    imageFiles = await res.json();
+    populateTimeOptions();
+  } catch {
+    console.warn('image_list.json not found. Please generate it.');
+  }
+}
 
-  populateVideoSelector();
-  updateTimeSelector();
+function populateTimeOptions() {
+  const times = imageFiles
+    .filter(f => f.endsWith('_SSS.png')) // SALから時間取得
+    .map(f => f.split('/').pop().split('_')[0]);
+  const uniqueTimes = [...new Set(times)].sort();
+
+  imageTime.innerHTML = '';
+  for (const t of uniqueTimes) {
+    const formatted = `${t.slice(0,4)}/${t.slice(4,6)}/${t.slice(6,8)} ${t.slice(8,10)}:${t.slice(10,12)}`;
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = formatted;
+    imageTime.appendChild(opt);
+  }
   updateImage();
 }
 
-// -----------------------------
-// 日時セレクト更新
-// -----------------------------
-function updateTimeSelector() {
-  const timeSelect = document.getElementById("time-select");
-  timeSelect.innerHTML = "";
-  if (!imageData[currentVar]) return;
-  imageData[currentVar].forEach((item, idx) => {
-    const opt = document.createElement("option");
-    opt.value = idx;
-    opt.textContent = item.datetime;
-    timeSelect.appendChild(opt);
-  });
-  currentIndex = 0;
-  timeSelect.selectedIndex = 0;
-}
-
-// -----------------------------
-// 画像更新
-// -----------------------------
 function updateImage() {
-  const imgEl = document.getElementById("display-img");
-  if (!imageData[currentVar] || imageData[currentVar].length === 0) {
-    imgEl.src = "";
-    imgEl.alt = "No image available";
-    return;
-  }
-  const item = imageData[currentVar][currentIndex];
-  imgEl.src = item.path;
-  document.getElementById("time-select").selectedIndex = currentIndex;
+  const varSel = imageVar.value;
+  const timeSel = imageTime.value;
+  const folder = folderMap[varSel];
+  const filename = `${timeSel}_${varSel}.png`;
+  const path = `images/${folder}/${filename}`;
+  displayImage.src = path;
 }
 
-// -----------------------------
-// PREV/NEXT操作
-// -----------------------------
-document.getElementById("prev-btn").onclick = () => {
-  if (!imageData[currentVar]) return;
-  currentI
+// PREV / NEXT
+document.getElementById('prevBtn').onclick = () => shiftImage(-1);
+document.getElementById('nextBtn').onclick = () => shiftImage(1);
+
+function shiftImage(offset) {
+  const idx = imageTime.selectedIndex;
+  const newIdx = idx + offset;
+  if (newIdx >= 0 && newIdx < imageTime.options.length) {
+    imageTime.selectedIndex = newIdx;
+    updateImage();
+  }
+}
+
+imageVar.onchange = updateImage;
+imageTime.onchange = updateImage;
+
+// =========================
+// 動画モード
+// =========================
+const videoVar = document.getElementById('videoVar');
+const displayVideo = document.getElementById('displayVideo');
+
+function updateVideo() {
+  const varSel = videoVar.value;
+  const path = `mv/${varSel}.mp4`;
+  displayVideo.src = path;
+  displayVideo.load();
+}
+
+videoVar.onchange = updateVideo;
+
+// =========================
+// モード切り替え
+// =========================
+const imageMode = document.getElementById('imageMode');
+const videoMode = document.getElementById('videoMode');
+const imageModeBtn = document.getElementById('imageModeBtn');
+const videoModeBtn = document.getElementById('videoModeBtn');
+
+imageModeBtn.onclick = () => {
+  imageMode.style.display = 'block';
+  videoMode.style.display = 'none';
+  imageModeBtn.classList.add('active');
+  videoModeBtn.classList.remove('active');
+};
+
+videoModeBtn.onclick = () => {
+  imageMode.style.display = 'none';
+  videoMode.style.display = 'block';
+  videoModeBtn.classList.add('active');
+  imageModeBtn.classList.remove('active');
+};
+
+// =========================
+// 初期化
+// =========================
+loadImageList();
+updateVideo();
+</script>
+</body>
+</html>
