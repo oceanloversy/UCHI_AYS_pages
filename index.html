@@ -132,42 +132,36 @@ const folderMap = {
 const imageVar = document.getElementById('imageVar');
 const imageTime = document.getElementById('imageTime');
 const displayImage = document.getElementById('displayImage');
-let imageFiles = [];
+let imageFiles = {};
 
-// ファイルリスト読み込み（generate_index.pyで生成されたJSONを使用）
 async function loadImageList() {
   try {
-    const res = await fetch('image_list.json'); // JSONはgenerate_index.pyで生成
+    const res = await fetch('image_list.json');
     imageFiles = await res.json();
     populateTimeOptions();
-  } catch {
+  } catch (e) {
     console.warn('image_list.json not found. Please generate it.');
   }
 }
 
 function populateTimeOptions() {
-  const times = imageFiles
-    .filter(f => f.endsWith('_SSS.png')) // SALから時間取得
-    .map(f => f.split('/').pop().split('_')[0]);
-  const uniqueTimes = [...new Set(times)].sort();
+  const varSel = imageVar.value;
+  if (!imageFiles[varSel]) return;
 
   imageTime.innerHTML = '';
-  for (const t of uniqueTimes) {
-    const formatted = `${t.slice(0,4)}/${t.slice(4,6)}/${t.slice(6,8)} ${t.slice(8,10)}:${t.slice(10,12)}`;
+  imageFiles[varSel].forEach(entry => {
     const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = formatted;
+    opt.value = entry.path;
+    opt.textContent = entry.datetime;
     imageTime.appendChild(opt);
-  }
+  });
+
   updateImage();
 }
 
 function updateImage() {
-  const varSel = imageVar.value;
-  const timeSel = imageTime.value;
-  const folder = folderMap[varSel];
-  const filename = `${timeSel}_${varSel}.png`;
-  const path = `images/${folder}/${filename}`;
+  const path = imageTime.value;
+  if (!path) return;
   displayImage.src = path;
 }
 
@@ -184,7 +178,7 @@ function shiftImage(offset) {
   }
 }
 
-imageVar.onchange = updateImage;
+imageVar.onchange = populateTimeOptions;
 imageTime.onchange = updateImage;
 
 // =========================
