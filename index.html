@@ -51,6 +51,11 @@
   #mode-buttons button.active {
     background-color: #0056b3;
   }
+  @media (max-width: 600px) {
+  #velocityNoteImage, #velocityNoteVideo {
+    font-size: 12px;
+  }
+  }
 </style>
 </head>
 
@@ -85,9 +90,14 @@
       <button id="nextBtn">NEXT</button>
     </div>
 
-    <div>
-      <img id="displayImage" src="" alt="Sea Condition Image">
-    </div>
+  <!-- ▼ 追加部分：画像＋赤文字重ね表示 -->
+  　<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
+    　<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
+    　<div id="velocityNoteImage"
+         style="position:absolute; top:10px; right:10px; color:red; font-size:14px; font-weight:bold; display:none;">
+      　赤矢印は流速0.5m/s以上
+    　</div>
+  　</div>
   </div>
 
   <!-- 動画モード -->
@@ -104,12 +114,18 @@
       </select>
     </div>
 
-    <div>
-      <video id="displayVideo" controls>
-        <source src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-    </div>
+ <!-- ▼ 追加部分：動画＋赤文字重ね表示 -->
+  　<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
+    　<video id="displayVideo" controls style="max-width:100%; height:auto;">
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    　</video>
+    　<div id="velocityNoteVideo"
+         style="position:absolute; top:10px; right:10px; color:red; font-size:14px; font-weight:bold; display:none;">
+      　赤矢印は流速0.5m/s以上
+    　</div>
+  　</div>
+    
   </div>
 </div>
 
@@ -163,6 +179,14 @@ function updateImage() {
   const path = imageTime.value;
   if (!path) return;
   displayImage.src = path;
+
+  // ▼ 追加：赤文字表示制御
+  const note = document.getElementById('velocityNoteImage');
+  if (path.includes('SVel') || path.includes('BVel')) {
+    note.style.display = 'block';
+  } else {
+    note.style.display = 'none';
+  }
 }
 
 // PREV / NEXT
@@ -192,6 +216,14 @@ function updateVideo() {
   const path = `mv/${varSel}.mp4`;
   displayVideo.src = path;
   displayVideo.load();
+
+  // ▼ 追加：赤文字表示制御
+  const note = document.getElementById('velocityNoteVideo');
+  if (varSel === 'SVel' || varSel === 'BVel') {
+    note.style.display = 'block';
+  } else {
+    note.style.display = 'none';
+  }
 }
 
 videoVar.onchange = updateVideo;
