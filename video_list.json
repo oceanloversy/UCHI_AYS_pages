@@ -1,8 +1,26 @@
 [
-  "mv/BS.mp4",
-  "mv/BT.mp4",
-  "mv/BVel.mp4",
-  "mv/SSS.mp4",
-  "mv/SST.mp4",
-  "mv/SVel.mp4"
+  {
+    "name": "BS",
+    "path": "mv/BS.mp4"
+  },
+  {
+    "name": "BT",
+    "path": "mv/BT.mp4"
+  },
+  {
+    "name": "BVel",
+    "path": "mv/BVel.mp4"
+  },
+  {
+    "name": "SSS",
+    "path": "mv/SSS.mp4"
+  },
+  {
+    "name": "SST",
+    "path": "mv/SST.mp4"
+  },
+  {
+    "name": "SVel",
+    "path": "mv/SVel.mp4"
+  }
 ]
