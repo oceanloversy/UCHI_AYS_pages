@@ -6,229 +6,171 @@
 <title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
 <style>
   body {
-    font-family: "Segoe UI", Arial, sans-serif;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    margin: 0; padding: 0;
     background-color: #f8f9fa;
-    margin: 0;
     text-align: center;
   }
   header {
-    background: linear-gradient(90deg, #004e92, #000428);
+    background-color: #005f8f;
     color: white;
-    padding: 1.2rem;
+    padding: 10px 0;
     font-size: 1.4rem;
     font-weight: bold;
   }
-  .container {
-    margin: 1.5rem auto;
+  main {
+    margin: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .section {
+    background: white;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     width: 95%;
-    max-width: 900px;
+    max-width: 800px;
   }
   select, button {
-    margin: 0.5rem;
-    padding: 0.5rem;
+    padding: 6px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
     font-size: 1rem;
+  }
+  button {
+    background-color: #005f8f;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0077b6;
   }
   img, video {
     width: 100%;
     height: auto;
-    max-height: 80vh;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    background: white;
-  }
-  .btn-group {
-    margin-top: 0.8rem;
-  }
-  #mode-buttons button {
-    background-color: #007bff;
-    color: white;
-    border: none;
+    margin-top: 10px;
     border-radius: 6px;
-    padding: 0.6rem 1rem;
-    margin: 0.3rem;
-    cursor: pointer;
   }
-  #mode-buttons button.active {
-    background-color: #0056b3;
+  #image-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  footer {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #555;
   }
 </style>
 </head>
-
 <body>
-<header>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</header>
 
-<div class="container">
-  <div id="mode-buttons">
-    <button id="imageModeBtn" class="active">ê√é~âÊëú</button>
-    <button id="videoModeBtn">ìÆâÊ</button>
-  </div>
+<header>
+  PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA
+</header>
 
-  <!-- ê√é~âÊëúÉÇÅ[Éh -->
-  <div id="imageMode">
+<main>
+
+  <!-- ÈùôÊ≠¢ÁîªÂÉè„Çª„ÇØ„Ç∑„Éß„É≥ -->
+  <div class="section" id="images-section">
+    <h2>Sea Condition Maps (Static)</h2>
     <div>
-      <label>çÄñ⁄ÅF</label>
-      <select id="imageVar">
-        <option value="SSS">SSS</option>
-        <option value="BS">BS</option>
-        <option value="SST">SST</option>
-        <option value="BT">BT</option>
-        <option value="SVel">SVel</option>
-        <option value="BVel">BVel</option>
-      </select>
-
-      <label>ì˙éûÅF</label>
-      <select id="imageTime"></select>
-    </div>
-
-    <div class="btn-group">
-      <button id="prevBtn">PREV</button>
-      <button id="nextBtn">NEXT</button>
-    </div>
-
-    <div>
-      <img id="displayImage" src="" alt="Sea Condition Image">
-    </div>
-  </div>
-
-  <!-- ìÆâÊÉÇÅ[Éh -->
-  <div id="videoMode" style="display:none;">
-    <div>
-      <label>çÄñ⁄ÅF</label>
-      <select id="videoVar">
-        <option value="SSS">SSS</option>
-        <option value="BS">BS</option>
-        <option value="SST">SST</option>
-        <option value="BT">BT</option>
-        <option value="SVel">SVel</option>
-        <option value="BVel">BVel</option>
+      <label>Parameter:</label>
+      <select id="var-select">
+        <option value="SSS">SSS (Surface Salinity)</option>
+        <option value="BS">BS (Bottom Salinity)</option>
+        <option value="SST">SST (Surface Temperature)</option>
+        <option value="BT">BT (Bottom Temperature)</option>
+        <option value="SVel">SVel (Surface Velocity)</option>
+        <option value="BVel">BVel (Bottom Velocity)</option>
       </select>
     </div>
-
     <div>
-      <video id="displayVideo" controls>
-        <source src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+      <label>Date & Time:</label>
+      <select id="time-select"></select>
     </div>
+    <div id="image-controls">
+      <button id="prev-btn">PREV</button>
+      <button id="next-btn">NEXT</button>
+    </div>
+    <img id="display-img" src="" alt="Sea Condition Map">
   </div>
-</div>
+
+  <!-- ÂãïÁîª„Çª„ÇØ„Ç∑„Éß„É≥ -->
+  <div class="section" id="videos-section">
+    <h2>Time-Lapse Movies</h2>
+    <div>
+      <label>Parameter:</label>
+      <select id="video-select"></select>
+    </div>
+    <video id="display-video" controls></video>
+  </div>
+
+</main>
+
+<footer>
+  ¬© 2025 UCHI Ocean Simulation Project ‚Äî Ariake & Yatsushiro Sea
+</footer>
 
 <script>
-// =========================
-// ÉtÉ@ÉCÉãç\ê¨ê›íË
-// =========================
-const folderMap = {
-  'SSS': 'SAL',
-  'BS':  'SAL',
-  'SST': 'TEM',
-  'BT':  'TEM',
-  'SVel':'VEL',
-  'BVel':'VEL'
-};
+let imageData = {};
+let videoData = [];
+let currentVar = "SSS";
+let currentIndex = 0;
 
-// =========================
-// ê√é~âÊëúÉÇÅ[Éh
-// =========================
-const imageVar = document.getElementById('imageVar');
-const imageTime = document.getElementById('imageTime');
-const displayImage = document.getElementById('displayImage');
-let imageFiles = [];
+// -----------------------------
+// JSONË™≠„ÅøËæº„Åø
+// -----------------------------
+async function loadJSON() {
+  const imgRes = await fetch("image_list.json");
+  imageData = await imgRes.json();
 
-// ÉtÉ@ÉCÉãÉäÉXÉgì«Ç›çûÇ›Åigenerate_index.pyÇ≈ê∂ê¨Ç≥ÇÍÇΩJSONÇégópÅj
-async function loadImageList() {
-  try {
-    const res = await fetch('image_list.json'); // JSONÇÕgenerate_index.pyÇ≈ê∂ê¨
-    imageFiles = await res.json();
-    populateTimeOptions();
-  } catch {
-    console.warn('image_list.json not found. Please generate it.');
-  }
-}
+  const vidRes = await fetch("video_list.json");
+  videoData = await vidRes.json();
 
-function populateTimeOptions() {
-  const times = imageFiles
-    .filter(f => f.endsWith('_SSS.png')) // SALÇ©ÇÁéûä‘éÊìæ
-    .map(f => f.split('/').pop().split('_')[0]);
-  const uniqueTimes = [...new Set(times)].sort();
-
-  imageTime.innerHTML = '';
-  for (const t of uniqueTimes) {
-    const formatted = `${t.slice(0,4)}/${t.slice(4,6)}/${t.slice(6,8)} ${t.slice(8,10)}:${t.slice(10,12)}`;
-    const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = formatted;
-    imageTime.appendChild(opt);
-  }
+  populateVideoSelector();
+  updateTimeSelector();
   updateImage();
 }
 
+// -----------------------------
+// Êó•ÊôÇ„Çª„É¨„ÇØ„ÉàÊõ¥Êñ∞
+// -----------------------------
+function updateTimeSelector() {
+  const timeSelect = document.getElementById("time-select");
+  timeSelect.innerHTML = "";
+  if (!imageData[currentVar]) return;
+  imageData[currentVar].forEach((item, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = item.datetime;
+    timeSelect.appendChild(opt);
+  });
+  currentIndex = 0;
+  timeSelect.selectedIndex = 0;
+}
+
+// -----------------------------
+// ÁîªÂÉèÊõ¥Êñ∞
+// -----------------------------
 function updateImage() {
-  const varSel = imageVar.value;
-  const timeSel = imageTime.value;
-  const folder = folderMap[varSel];
-  const filename = `${timeSel}_${varSel}.png`;
-  const path = `images/${folder}/${filename}`;
-  displayImage.src = path;
-}
-
-// PREV / NEXT
-document.getElementById('prevBtn').onclick = () => shiftImage(-1);
-document.getElementById('nextBtn').onclick = () => shiftImage(1);
-
-function shiftImage(offset) {
-  const idx = imageTime.selectedIndex;
-  const newIdx = idx + offset;
-  if (newIdx >= 0 && newIdx < imageTime.options.length) {
-    imageTime.selectedIndex = newIdx;
-    updateImage();
+  const imgEl = document.getElementById("display-img");
+  if (!imageData[currentVar] || imageData[currentVar].length === 0) {
+    imgEl.src = "";
+    imgEl.alt = "No image available";
+    return;
   }
+  const item = imageData[currentVar][currentIndex];
+  imgEl.src = item.path;
+  document.getElementById("time-select").selectedIndex = currentIndex;
 }
 
-imageVar.onchange = updateImage;
-imageTime.onchange = updateImage;
-
-// =========================
-// ìÆâÊÉÇÅ[Éh
-// =========================
-const videoVar = document.getElementById('videoVar');
-const displayVideo = document.getElementById('displayVideo');
-
-function updateVideo() {
-  const varSel = videoVar.value;
-  const path = `mv/${varSel}.mp4`;
-  displayVideo.src = path;
-  displayVideo.load();
-}
-
-videoVar.onchange = updateVideo;
-
-// =========================
-// ÉÇÅ[ÉhêÿÇËë÷Ç¶
-// =========================
-const imageMode = document.getElementById('imageMode');
-const videoMode = document.getElementById('videoMode');
-const imageModeBtn = document.getElementById('imageModeBtn');
-const videoModeBtn = document.getElementById('videoModeBtn');
-
-imageModeBtn.onclick = () => {
-  imageMode.style.display = 'block';
-  videoMode.style.display = 'none';
-  imageModeBtn.classList.add('active');
-  videoModeBtn.classList.remove('active');
-};
-
-videoModeBtn.onclick = () => {
-  imageMode.style.display = 'none';
-  videoMode.style.display = 'block';
-  videoModeBtn.classList.add('active');
-  imageModeBtn.classList.remove('active');
-};
-
-// =========================
-// èâä˙âª
-// =========================
-loadImageList();
-updateVideo();
-</script>
-</body>
-</html>
+// -----------------------------
+// PREV/NEXTÊìç‰Ωú
+// -----------------------------
+document.getElementById("prev-btn").onclick = () => {
+  if (!imageData[currentVar]) return;
+  currentI
