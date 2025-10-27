@@ -65,14 +65,14 @@
 
 <div class="container">
   <div id="mode-buttons">
-    <button id="imageModeBtn" class="active">Ã~‰æ‘œ</button>
-    <button id="videoModeBtn">“®‰æ</button>
+    <button id="imageModeBtn" class="active">é™æ­¢ç”»åƒ</button>
+    <button id="videoModeBtn">å‹•ç”»</button>
   </div>
 
-  <!-- Ã~‰æ‘œƒ‚[ƒh -->
+  <!-- é™æ­¢ç”»åƒãƒ¢ãƒ¼ãƒ‰ -->
   <div id="imageMode">
     <div>
-      <label>€–ÚF</label>
+      <label>é …ç›®ï¼š</label>
       <select id="imageVar">
         <option value="SSS">SSS(Sea Surface Salinity)</option>
         <option value="BS">BS(Bottom Salinity)</option>
@@ -82,7 +82,7 @@
         <option value="BVel">BVel(Bottom Current)</option>
       </select>
 
-      <label>“úF</label>
+      <label>æ—¥æ™‚ï¼š</label>
       <select id="imageTime"></select>
     </div>
 
@@ -91,20 +91,20 @@
       <button id="nextBtn">NEXT</button>
     </div>
 
-  <!-- ¥ ’Ç‰Á•”•ªF‰æ‘œ{Ô•¶šd‚Ë•\¦ -->
-  @<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
-    @<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
-    @<div id="velocityNoteImage"
+  <!-- â–¼ è¿½åŠ éƒ¨åˆ†ï¼šç”»åƒï¼‹èµ¤æ–‡å­—é‡ã­è¡¨ç¤º -->
+  ã€€<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
+    ã€€<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
+    ã€€<div id="velocityNoteImage"
          style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      @Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
-    @</div>
-  @</div>
+      ã€€èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
+    ã€€</div>
+  ã€€</div>
   </div>
 
-  <!-- “®‰æƒ‚[ƒh -->
+  <!-- å‹•ç”»ãƒ¢ãƒ¼ãƒ‰ -->
   <div id="videoMode" style="display:none;">
     <div>
-      <label>€–ÚF</label>
+      <label>é …ç›®ï¼š</label>
       <select id="videoVar">
         <option value="SSS">SSS(Sea Surface Salinity)</option>
         <option value="BS">BS(Bottom Salinity)</option>
@@ -115,24 +115,24 @@
       </select>
     </div>
 
- <!-- ¥ ’Ç‰Á•”•ªF“®‰æ{Ô•¶šd‚Ë•\¦ -->
-  @<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
-    @<video id="displayVideo" controls style="max-width:100%; height:auto;">
+ <!-- â–¼ è¿½åŠ éƒ¨åˆ†ï¼šå‹•ç”»ï¼‹èµ¤æ–‡å­—é‡ã­è¡¨ç¤º -->
+  ã€€<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
+    ã€€<video id="displayVideo" controls style="max-width:100%; height:auto;">
       <source src="" type="video/mp4">
       Your browser does not support the video tag.
-    @</video>
-    @<div id="velocityNoteVideo"
+    ã€€</video>
+    ã€€<div id="velocityNoteVideo"
          style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      @Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
-    @</div>
-  @</div>
+      ã€€èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
+    ã€€</div>
+  ã€€</div>
     
   </div>
 </div>
 
 <script>
 // =========================
-// ƒtƒ@ƒCƒ‹\¬İ’è
+// ãƒ•ã‚¡ã‚¤ãƒ«æ§‹æˆè¨­å®š
 // =========================
 const folderMap = {
   'SSS': 'SAL',
@@ -144,7 +144,7 @@ const folderMap = {
 };
 
 // =========================
-// Ã~‰æ‘œƒ‚[ƒh
+// é™æ­¢ç”»åƒãƒ¢ãƒ¼ãƒ‰
 // =========================
 const imageVar = document.getElementById('imageVar');
 const imageTime = document.getElementById('imageTime');
@@ -181,7 +181,7 @@ function updateImage() {
   if (!path) return;
   displayImage.src = path;
 
-  // ¥ ’Ç‰ÁFÔ•¶š•\¦§Œä
+  // â–¼ è¿½åŠ ï¼šèµ¤æ–‡å­—è¡¨ç¤ºåˆ¶å¾¡
   const note = document.getElementById('velocityNoteImage');
   if (path.includes('SVel') || path.includes('BVel')) {
     note.style.display = 'block';
@@ -207,7 +207,7 @@ imageVar.onchange = populateTimeOptions;
 imageTime.onchange = updateImage;
 
 // =========================
-// “®‰æƒ‚[ƒh
+// å‹•ç”»ãƒ¢ãƒ¼ãƒ‰
 // =========================
 const videoVar = document.getElementById('videoVar');
 const displayVideo = document.getElementById('displayVideo');
@@ -218,7 +218,7 @@ function updateVideo() {
   displayVideo.src = path;
   displayVideo.load();
 
-  // ¥ ’Ç‰ÁFÔ•¶š•\¦§Œä
+  // â–¼ è¿½åŠ ï¼šèµ¤æ–‡å­—è¡¨ç¤ºåˆ¶å¾¡
   const note = document.getElementById('velocityNoteVideo');
   if (varSel === 'SVel' || varSel === 'BVel') {
     note.style.display = 'block';
@@ -230,7 +230,7 @@ function updateVideo() {
 videoVar.onchange = updateVideo;
 
 // =========================
-// ƒ‚[ƒhØ‚è‘Ö‚¦
+// ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ
 // =========================
 const imageMode = document.getElementById('imageMode');
 const videoMode = document.getElementById('videoMode');
@@ -252,7 +252,7 @@ videoModeBtn.onclick = () => {
 };
 
 // =========================
-// ‰Šú‰»
+// åˆæœŸåŒ–
 // =========================
 loadImageList();
 updateVideo();
