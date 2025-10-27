@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
 <style>
@@ -64,14 +65,14 @@
 
 <div class="container">
   <div id="mode-buttons">
-    <button id="imageModeBtn" class="active">é™æ­¢ç”»åƒ</button>
-    <button id="videoModeBtn">å‹•ç”»</button>
+    <button id="imageModeBtn" class="active">Ã~‰æ‘œ</button>
+    <button id="videoModeBtn">“®‰æ</button>
   </div>
 
-  <!-- é™æ­¢ç”»åƒãƒ¢ãƒ¼ãƒ‰ -->
+  <!-- Ã~‰æ‘œƒ‚[ƒh -->
   <div id="imageMode">
     <div>
-      <label>é …ç›®ï¼š</label>
+      <label>€–ÚF</label>
       <select id="imageVar">
         <option value="SSS">SSS(Sea Surface Salinity)</option>
         <option value="BS">BS(Bottom Salinity)</option>
@@ -81,7 +82,7 @@
         <option value="BVel">BVel(Bottom Current)</option>
       </select>
 
-      <label>æ—¥æ™‚ï¼š</label>
+      <label>“úF</label>
       <select id="imageTime"></select>
     </div>
 
@@ -90,20 +91,20 @@
       <button id="nextBtn">NEXT</button>
     </div>
 
-  <!-- â–¼ è¿½åŠ éƒ¨åˆ†ï¼šç”»åƒï¼‹èµ¤æ–‡å­—é‡ã­è¡¨ç¤º -->
-  ã€€<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
-    ã€€<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
-    ã€€<div id="velocityNoteImage"
+  <!-- ¥ ’Ç‰Á•”•ªF‰æ‘œ{Ô•¶šd‚Ë•\¦ -->
+  @<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
+    @<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
+    @<div id="velocityNoteImage"
          style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      ã€€èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
-    ã€€</div>
-  ã€€</div>
+      @Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
+    @</div>
+  @</div>
   </div>
 
-  <!-- å‹•ç”»ãƒ¢ãƒ¼ãƒ‰ -->
+  <!-- “®‰æƒ‚[ƒh -->
   <div id="videoMode" style="display:none;">
     <div>
-      <label>é …ç›®ï¼š</label>
+      <label>€–ÚF</label>
       <select id="videoVar">
         <option value="SSS">SSS(Sea Surface Salinity)</option>
         <option value="BS">BS(Bottom Salinity)</option>
@@ -114,24 +115,24 @@
       </select>
     </div>
 
- <!-- â–¼ è¿½åŠ éƒ¨åˆ†ï¼šå‹•ç”»ï¼‹èµ¤æ–‡å­—é‡ã­è¡¨ç¤º -->
-  ã€€<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
-    ã€€<video id="displayVideo" controls style="max-width:100%; height:auto;">
+ <!-- ¥ ’Ç‰Á•”•ªF“®‰æ{Ô•¶šd‚Ë•\¦ -->
+  @<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
+    @<video id="displayVideo" controls style="max-width:100%; height:auto;">
       <source src="" type="video/mp4">
       Your browser does not support the video tag.
-    ã€€</video>
-    ã€€<div id="velocityNoteVideo"
+    @</video>
+    @<div id="velocityNoteVideo"
          style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      ã€€èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
-    ã€€</div>
-  ã€€</div>
+      @Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
+    @</div>
+  @</div>
     
   </div>
 </div>
 
 <script>
 // =========================
-// ãƒ•ã‚¡ã‚¤ãƒ«æ§‹æˆè¨­å®š
+// ƒtƒ@ƒCƒ‹\¬İ’è
 // =========================
 const folderMap = {
   'SSS': 'SAL',
@@ -143,7 +144,7 @@ const folderMap = {
 };
 
 // =========================
-// é™æ­¢ç”»åƒãƒ¢ãƒ¼ãƒ‰
+// Ã~‰æ‘œƒ‚[ƒh
 // =========================
 const imageVar = document.getElementById('imageVar');
 const imageTime = document.getElementById('imageTime');
@@ -180,7 +181,7 @@ function updateImage() {
   if (!path) return;
   displayImage.src = path;
 
-  // â–¼ è¿½åŠ ï¼šèµ¤æ–‡å­—è¡¨ç¤ºåˆ¶å¾¡
+  // ¥ ’Ç‰ÁFÔ•¶š•\¦§Œä
   const note = document.getElementById('velocityNoteImage');
   if (path.includes('SVel') || path.includes('BVel')) {
     note.style.display = 'block';
@@ -206,7 +207,7 @@ imageVar.onchange = populateTimeOptions;
 imageTime.onchange = updateImage;
 
 // =========================
-// å‹•ç”»ãƒ¢ãƒ¼ãƒ‰
+// “®‰æƒ‚[ƒh
 // =========================
 const videoVar = document.getElementById('videoVar');
 const displayVideo = document.getElementById('displayVideo');
@@ -217,7 +218,7 @@ function updateVideo() {
   displayVideo.src = path;
   displayVideo.load();
 
-  // â–¼ è¿½åŠ ï¼šèµ¤æ–‡å­—è¡¨ç¤ºåˆ¶å¾¡
+  // ¥ ’Ç‰ÁFÔ•¶š•\¦§Œä
   const note = document.getElementById('velocityNoteVideo');
   if (varSel === 'SVel' || varSel === 'BVel') {
     note.style.display = 'block';
@@ -229,7 +230,7 @@ function updateVideo() {
 videoVar.onchange = updateVideo;
 
 // =========================
-// ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ
+// ƒ‚[ƒhØ‚è‘Ö‚¦
 // =========================
 const imageMode = document.getElementById('imageMode');
 const videoMode = document.getElementById('videoMode');
@@ -251,7 +252,7 @@ videoModeBtn.onclick = () => {
 };
 
 // =========================
-// åˆæœŸåŒ–
+// ‰Šú‰»
 // =========================
 loadImageList();
 updateVideo();
