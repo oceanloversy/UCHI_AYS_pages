@@ -160,8 +160,8 @@ const folderMap = {
   'BS':  'SAL',
   'SST': 'TEM',
   'BT':  'TEM',
-  'SVel': 'VEL',
-  'BVel': 'VEL'
+  'SVel':'VEL',
+  'BVel':'VEL'
 };
 
 // =========================
@@ -174,13 +174,12 @@ const zoomContainer = document.getElementById('zoomContainer');
 const zoomLevel = document.getElementById('zoomLevel');
 let imageFiles = {};
 
-// JSON読み込み（完了後にイベント登録）
+// JSON読み込み
 async function loadImageList() {
   try {
-    const res = await fetch('image_list.json', { cache: 'no-store' });
+    const res = await fetch('image_list.json');
     imageFiles = await res.json();
     populateTimeOptions();
-    registerImageEvents();
   } catch (e) {
     console.warn('image_list.json not found. Please generate it.');
   }
@@ -199,42 +198,34 @@ function populateTimeOptions() {
     imageTime.appendChild(opt);
   });
 
-  // iOS Safari用：DOM更新を確実に反映
-  requestAnimationFrame(() => {
-    updateZoomVisibility();
-    updateImage();
-  });
-}
-
-// ズーム選択の表示制御
-function updateZoomVisibility() {
-  const varSel = imageVar.value;
-  if (varSel === 'SVel' || varSel === 'BVel') {
-    zoomContainer.style.display = 'block';
-  } else {
-    zoomContainer.style.display = 'none';
-  }
+  updateImage();
 }
 
 // 画像更新処理
 function updateImage() {
   const pathBase = imageTime.value;
+  const zoomSuffix = zoomLevel.value || '';
   if (!pathBase) return;
-  const varSel = imageVar.value;
-  const zoomSuffix = (varSel === 'SVel' || varSel === 'BVel') ? (zoomLevel.value || '') : '';
 
   let path = pathBase;
-  if (zoomSuffix) {
+  const varSel = imageVar.value;
+  // SVel/BVelのみズームレベル付き画像
+  if ((varSel === 'SVel' || varSel === 'BVel') && zoomSuffix) {
     path = pathBase.replace('.png', `${zoomSuffix}.png`);
   }
 
   displayImage.src = path;
 
+  // 赤文字（流速注記）表示制御
   const note = document.getElementById('velocityNoteImage');
-  note.style.display = (varSel === 'SVel' || varSel === 'BVel') ? 'block' : 'none';
+  if (path.includes('SVel') || path.includes('BVel')) {
+    note.style.display = 'block';
+  } else {
+    note.style.display = 'none';
+  }
 }
 
-// PREV / NEXT
+// 画像切り替え（PREV / NEXT）
 document.getElementById('prevBtn').onclick = () => shiftImage(-1);
 document.getElementById('nextBtn').onclick = () => shiftImage(1);
 
@@ -247,18 +238,23 @@ function shiftImage(offset) {
   }
 }
 
-// 画像モードのイベント登録（スマホ対策：load後に実行）
-function registerImageEvents() {
-  imageVar.onchange = () => {
-    populateTimeOptions();
-  };
-  imageTime.onchange = () => {
-    updateImage();
-  };
-  zoomLevel.onchange = () => {
-    updateImage();
-  };
-}
+// -------------------------
+// イベント定義（順序重要）
+// -------------------------
+imageVar.onchange = function() {
+  populateTimeOptions();
+
+  // SVel/BVel時のみズームレベルプルダウンを表示
+  const varSel = imageVar.value;
+  if (varSel === 'SVel' || varSel === 'BVel') {
+    zoomContainer.style.display = 'block';
+  } else {
+    zoomContainer.style.display = 'none';
+  }
+};
+
+imageTime.onchange = updateImage;
+zoomLevel.onchange = updateImage;
 
 // =========================
 // 動画モード
@@ -272,6 +268,7 @@ function updateVideo() {
   const varSel = videoVar.value;
   let path = `mv/${varSel}.mp4`;
 
+  // SVel/BVel用：ズーム動画選択
   if ((varSel === 'SVel' || varSel === 'BVel') && zoomLevelVideo.value) {
     path = `mv/${varSel}${zoomLevelVideo.value}.mp4`;
   }
@@ -279,6 +276,7 @@ function updateVideo() {
   displayVideo.src = path;
   displayVideo.load();
 
+  // ズームと注記の表示制御
   const note = document.getElementById('velocityNoteVideo');
   if (varSel === 'SVel' || varSel === 'BVel') {
     zoomContainerVideo.style.display = 'block';
@@ -317,10 +315,6 @@ videoModeBtn.onclick = () => {
 // =========================
 // 初期化
 // =========================
-window.addEventListener('DOMContentLoaded', () => {
-  loadImageList();
-  updateVideo();
-});
+loadImageList();
+updateVideo();
 </script>
-
-
