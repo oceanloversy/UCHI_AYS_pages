@@ -313,8 +313,8 @@ const folderMap = {
   'BS':  'SAL',
   'SST': 'TEM',
   'BT':  'TEM',
-  'SVel':'VEL',
-  'BVel':'VEL'
+  'SVel': 'VEL',
+  'BVel': 'VEL'
 };
 
 // =========================
@@ -330,9 +330,10 @@ let imageFiles = {};
 // JSON読み込み
 async function loadImageList() {
   try {
-    const res = await fetch('image_list.json');
+    const res = await fetch('image_list.json', { cache: 'no-store' });
     imageFiles = await res.json();
     populateTimeOptions();
+    registerImageEvents();
   } catch (e) {
     console.warn('image_list.json not found. Please generate it.');
   }
@@ -343,8 +344,21 @@ function populateTimeOptions() {
   const varSel = imageVar.value;
   if (!imageFiles[varSel]) return;
 
+  let entries = [];
+  // SVel / BVel の場合：ズームごとに分岐
+  if (varSel === 'SVel' || varSel === 'BVel') {
+    zoomContainer.style.display = 'block';
+    const zoomKey = zoomLevel.value ? zoomLevel.value.replace('_', '') : 'z1';
+    if (imageFiles[varSel][zoomKey]) {
+      entries = imageFiles[varSel][zoomKey];
+    }
+  } else {
+    zoomContainer.style.display = 'none';
+    entries = imageFiles[varSel];
+  }
+
   imageTime.innerHTML = '';
-  imageFiles[varSel].forEach(entry => {
+  entries.forEach(entry => {
     const opt = document.createElement('option');
     opt.value = entry.path;
     opt.textContent = entry.datetime;
@@ -356,29 +370,17 @@ function populateTimeOptions() {
 
 // 画像更新処理
 function updateImage() {
-  const pathBase = imageTime.value;
-  const zoomSuffix = zoomLevel.value || '';
-  if (!pathBase) return;
-
-  let path = pathBase;
   const varSel = imageVar.value;
-  // SVel/BVelのみズームレベル付き画像
-  if ((varSel === 'SVel' || varSel === 'BVel') && zoomSuffix) {
-    path = pathBase.replace('.png', `${zoomSuffix}.png`);
-  }
-
+  const path = imageTime.value;
+  if (!path) return;
   displayImage.src = path;
 
   // 赤文字（流速注記）表示制御
   const note = document.getElementById('velocityNoteImage');
-  if (path.includes('SVel') || path.includes('BVel')) {
-    note.style.display = 'block';
-  } else {
-    note.style.display = 'none';
-  }
+  note.style.display = (varSel === 'SVel' || varSel === 'BVel') ? 'block' : 'none';
 }
 
-// 画像切り替え（PREV / NEXT）
+// PREV / NEXT
 document.getElementById('prevBtn').onclick = () => shiftImage(-1);
 document.getElementById('nextBtn').onclick = () => shiftImage(1);
 
@@ -391,23 +393,12 @@ function shiftImage(offset) {
   }
 }
 
-// -------------------------
-// イベント定義（順序重要）
-// -------------------------
-imageVar.onchange = function() {
-  populateTimeOptions();
-
-  // SVel/BVel時のみズームレベルプルダウンを表示
-  const varSel = imageVar.value;
-  if (varSel === 'SVel' || varSel === 'BVel') {
-    zoomContainer.style.display = 'block';
-  } else {
-    zoomContainer.style.display = 'none';
-  }
-};
-
-imageTime.onchange = updateImage;
-zoomLevel.onchange = updateImage;
+// イベント登録
+function registerImageEvents() {
+  imageVar.onchange = populateTimeOptions;
+  imageTime.onchange = updateImage;
+  zoomLevel.onchange = populateTimeOptions;
+}
 
 // =========================
 // 動画モード
@@ -420,16 +411,12 @@ const zoomLevelVideo = document.getElementById('zoomLevelVideo');
 function updateVideo() {
   const varSel = videoVar.value;
   let path = `mv/${varSel}.mp4`;
-
-  // SVel/BVel用：ズーム動画選択
   if ((varSel === 'SVel' || varSel === 'BVel') && zoomLevelVideo.value) {
     path = `mv/${varSel}${zoomLevelVideo.value}.mp4`;
   }
-
   displayVideo.src = path;
   displayVideo.load();
 
-  // ズームと注記の表示制御
   const note = document.getElementById('velocityNoteVideo');
   if (varSel === 'SVel' || varSel === 'BVel') {
     zoomContainerVideo.style.display = 'block';
@@ -468,7 +455,10 @@ videoModeBtn.onclick = () => {
 // =========================
 // 初期化
 // =========================
-loadImageList();
-updateVideo();
+window.addEventListener('DOMContentLoaded', () => {
+  loadImageList();
+  updateVideo();
+});
 </script>
+
 
