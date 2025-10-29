@@ -1,156 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
-<style>
-  body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    text-align: center;
-  }
-  header {
-    background: linear-gradient(90deg, #004e92, #000428);
-    color: white;
-    padding: 1.2rem;
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-  .container {
-    margin: 1.5rem auto;
-    width: 95%;
-    max-width: 900px;
-  }
-  select, button {
-    margin: 0.5rem;
-    padding: 0.5rem;
-    font-size: 1rem;
-  }
-  img, video {
-    width: 100%;
-    height: auto;
-    max-height: 80vh;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    background: white;
-  }
-  .btn-group {
-    margin-top: 0.8rem;
-  }
-  #mode-buttons button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.6rem 1rem;
-    margin: 0.3rem;
-    cursor: pointer;
-  }
-  #mode-buttons button.active {
-    background-color: #0056b3;
-  }
-  @media (max-width: 600px) {
-  #velocityNoteImage, #velocityNoteVideo {
-    font-size: 12px;
-  }
-  }
-</style>
-</head>
-
-<body>
-<header>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</header>
-
-<div class="container">
-  <div id="mode-buttons">
-    <button id="imageModeBtn" class="active">静止画像</button>
-    <button id="videoModeBtn">動画</button>
-  </div>
-
-  <!-- 静止画像モード -->
-  <div id="imageMode">
-    <div>
-      <label>項目：</label>
-      <select id="imageVar">
-        <option value="SSS">SSS(Sea Surface Salinity)</option>
-        <option value="BS">BS(Bottom Salinity)</option>
-        <option value="SST">SST(Sea Surface Temperature)</option>
-        <option value="BT">BT(Bottom Temperature)</option>
-        <option value="SVel">SVel(Surface Current)</option>
-        <option value="BVel">BVel(Bottom Current)</option>
-      </select>
-      <br>
-      <label>日時：</label>
-      <select id="imageTime"></select>
-      <br>
-      <div id="zoomContainer" style="display:none; margin-top:0.5rem;">
-      <label>ズームレベル：</label>
-      <select id="zoomLevel">
-        <option value="_z1">粗</option>
-        <option value="_z2">中</option>
-        <option value="_z3">細</option>
-        <option value="_z4">最密</option>
-      </select>
-      </div>
-    </div>
-
-    <div class="btn-group">
-      <button id="prevBtn">PREV</button>
-      <button id="nextBtn">NEXT</button>
-    </div>
-
-  <!-- ▼ 追加部分：画像＋赤文字重ね表示 -->
-  　<div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
-    　<img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
-    　<div id="velocityNoteImage"
-         style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      　赤矢印は流速0.5m/s以上
-    　</div>
-  　</div>
-  </div>
-
-  <!-- 動画モード -->
-  <div id="videoMode" style="display:none;">
-    <div>
-      <label>項目：</label>
-      <select id="videoVar">
-        <option value="SSS">SSS(Sea Surface Salinity)</option>
-        <option value="BS">BS(Bottom Salinity)</option>
-        <option value="SST">SST(Sea Surface Temperature)</option>
-        <option value="BT">BT(Bottom Temperature)</option>
-        <option value="SVel">SVel(Surface Current)</option>
-        <option value="BVel">BVel(Bottom Current)</option>
-      </select>
-    </div>
-
-    <!-- ▼ ズームレベル選択（SVel/BVel時のみ表示） -->
-    <div id="zoomContainerVideo" style="display:none; margin-top:0.5rem;">
-      <label>ズームレベル：</label>
-      <select id="zoomLevelVideo">
-        <option value="_z1">粗</option>
-        <option value="_z2">中</option>
-        <option value="_z3">細</option>
-        <option value="_z4">最密</option>
-      </select>
-    </div>
-
- <!-- ▼ 追加部分：動画＋赤文字重ね表示 -->
-  　<div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
-    　<video id="displayVideo" controls style="max-width:100%; height:auto;">
-      <source src="" type="video/mp4">
-      Your browser does not support the video tag.
-    　</video>
-    　<div id="velocityNoteVideo"
-         style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-      　赤矢印は流速0.5m/s以上
-    　</div>
-  　</div>
-    
-  </div>
-</div>
-
 <script>
 // =========================
 // ファイル構成設定
@@ -174,6 +21,7 @@ const zoomContainer = document.getElementById('zoomContainer');
 const zoomLevel = document.getElementById('zoomLevel');
 let imageFiles = {};
 
+// JSON読み込み
 async function loadImageList() {
   try {
     const res = await fetch('image_list.json');
@@ -184,6 +32,7 @@ async function loadImageList() {
   }
 }
 
+// 日時プルダウン更新
 function populateTimeOptions() {
   const varSel = imageVar.value;
   if (!imageFiles[varSel]) return;
@@ -196,36 +45,25 @@ function populateTimeOptions() {
     imageTime.appendChild(opt);
   });
 
-imageVar.onchange = function() {
-  populateTimeOptions();
-  
-  // ▼ SVel または BVel のときだけズーム選択を表示
-  const varSel = imageVar.value;
-  if (varSel === 'SVel' || varSel === 'BVel') {
-    zoomContainer.style.display = 'block';
-  } else {
-    zoomContainer.style.display = 'none';
-  }
-};
-  
   updateImage();
 }
 
+// 画像更新処理
 function updateImage() {
   const pathBase = imageTime.value;
-  const zoomSuffix = zoomLevel.value || ''; // ズーム非表示時は空
+  const zoomSuffix = zoomLevel.value || '';
   if (!pathBase) return;
 
   let path = pathBase;
-  // ▼ SVel または BVel のときのみズームSuffixを適用
   const varSel = imageVar.value;
+  // SVel/BVelのみズームレベル付き画像
   if ((varSel === 'SVel' || varSel === 'BVel') && zoomSuffix) {
-    path = pathBase.replace(".png", `${zoomSuffix}.png`);
+    path = pathBase.replace('.png', `${zoomSuffix}.png`);
   }
 
   displayImage.src = path;
 
-  // ▼ 追加：赤文字表示制御
+  // 赤文字（流速注記）表示制御
   const note = document.getElementById('velocityNoteImage');
   if (path.includes('SVel') || path.includes('BVel')) {
     note.style.display = 'block';
@@ -234,7 +72,7 @@ function updateImage() {
   }
 }
 
-// PREV / NEXT
+// 画像切り替え（PREV / NEXT）
 document.getElementById('prevBtn').onclick = () => shiftImage(-1);
 document.getElementById('nextBtn').onclick = () => shiftImage(1);
 
@@ -247,7 +85,21 @@ function shiftImage(offset) {
   }
 }
 
-imageVar.onchange = populateTimeOptions;
+// -------------------------
+// イベント定義（順序重要）
+// -------------------------
+imageVar.onchange = function() {
+  populateTimeOptions();
+
+  // SVel/BVel時のみズームレベルプルダウンを表示
+  const varSel = imageVar.value;
+  if (varSel === 'SVel' || varSel === 'BVel') {
+    zoomContainer.style.display = 'block';
+  } else {
+    zoomContainer.style.display = 'none';
+  }
+};
+
 imageTime.onchange = updateImage;
 zoomLevel.onchange = updateImage;
 
@@ -261,9 +113,9 @@ const zoomLevelVideo = document.getElementById('zoomLevelVideo');
 
 function updateVideo() {
   const varSel = videoVar.value;
-
-  // ▼ ズームレベル付きパス
   let path = `mv/${varSel}.mp4`;
+
+  // SVel/BVel用：ズーム動画選択
   if ((varSel === 'SVel' || varSel === 'BVel') && zoomLevelVideo.value) {
     path = `mv/${varSel}${zoomLevelVideo.value}.mp4`;
   }
@@ -271,13 +123,14 @@ function updateVideo() {
   displayVideo.src = path;
   displayVideo.load();
 
-  // ▼ ズームプルダウンと赤文字の表示制御
+  // ズームと注記の表示制御
+  const note = document.getElementById('velocityNoteVideo');
   if (varSel === 'SVel' || varSel === 'BVel') {
     zoomContainerVideo.style.display = 'block';
-    document.getElementById('velocityNoteVideo').style.display = 'block';
+    note.style.display = 'block';
   } else {
     zoomContainerVideo.style.display = 'none';
-    document.getElementById('velocityNoteVideo').style.display = 'none';
+    note.style.display = 'none';
   }
 }
 
@@ -312,5 +165,3 @@ videoModeBtn.onclick = () => {
 loadImageList();
 updateVideo();
 </script>
-</body>
-</html>
