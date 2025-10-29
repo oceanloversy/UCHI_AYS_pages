@@ -84,6 +84,16 @@
       <br>
       <label>日時：</label>
       <select id="imageTime"></select>
+      <br>
+      <div id="zoomContainer" style="display:none; margin-top:0.5rem;">
+      <label>ズームレベル：</label>
+      <select id="zoomLevel">
+        <option value="_z1">粗</option>
+        <option value="_z2">中</option>
+        <option value="_z3">細</option>
+        <option value="_z4">最密</option>
+      </select>
+      </div>
     </div>
 
     <div class="btn-group">
@@ -112,6 +122,17 @@
         <option value="BT">BT(Bottom Temperature)</option>
         <option value="SVel">SVel(Surface Current)</option>
         <option value="BVel">BVel(Bottom Current)</option>
+      </select>
+    </div>
+
+    <!-- ▼ ズームレベル選択（SVel/BVel時のみ表示） -->
+    <div id="zoomContainerVideo" style="display:none; margin-top:0.5rem;">
+      <label>ズームレベル：</label>
+      <select id="zoomLevelVideo">
+        <option value="_z1">粗</option>
+        <option value="_z2">中</option>
+        <option value="_z3">細</option>
+        <option value="_z4">最密</option>
       </select>
     </div>
 
@@ -149,6 +170,8 @@ const folderMap = {
 const imageVar = document.getElementById('imageVar');
 const imageTime = document.getElementById('imageTime');
 const displayImage = document.getElementById('displayImage');
+const zoomContainer = document.getElementById('zoomContainer');
+const zoomLevel = document.getElementById('zoomLevel');
 let imageFiles = {};
 
 async function loadImageList() {
@@ -173,12 +196,33 @@ function populateTimeOptions() {
     imageTime.appendChild(opt);
   });
 
+imageVar.onchange = function() {
+  populateTimeOptions();
+  
+  // ▼ SVel または BVel のときだけズーム選択を表示
+  const varSel = imageVar.value;
+  if (varSel === 'SVel' || varSel === 'BVel') {
+    zoomContainer.style.display = 'block';
+  } else {
+    zoomContainer.style.display = 'none';
+  }
+};
+  
   updateImage();
 }
 
 function updateImage() {
-  const path = imageTime.value;
-  if (!path) return;
+  const pathBase = imageTime.value;
+  const zoomSuffix = zoomLevel.value || ''; // ズーム非表示時は空
+  if (!pathBase) return;
+
+  let path = pathBase;
+  // ▼ SVel または BVel のときのみズームSuffixを適用
+  const varSel = imageVar.value;
+  if ((varSel === 'SVel' || varSel === 'BVel') && zoomSuffix) {
+    path = pathBase.replace(".png", `${zoomSuffix}.png`);
+  }
+
   displayImage.src = path;
 
   // ▼ 追加：赤文字表示制御
@@ -205,29 +249,40 @@ function shiftImage(offset) {
 
 imageVar.onchange = populateTimeOptions;
 imageTime.onchange = updateImage;
+zoomLevel.onchange = updateImage;
 
 // =========================
 // 動画モード
 // =========================
 const videoVar = document.getElementById('videoVar');
 const displayVideo = document.getElementById('displayVideo');
+const zoomContainerVideo = document.getElementById('zoomContainerVideo');
+const zoomLevelVideo = document.getElementById('zoomLevelVideo');
 
 function updateVideo() {
   const varSel = videoVar.value;
-  const path = `mv/${varSel}.mp4`;
+
+  // ▼ ズームレベル付きパス
+  let path = `mv/${varSel}.mp4`;
+  if ((varSel === 'SVel' || varSel === 'BVel') && zoomLevelVideo.value) {
+    path = `mv/${varSel}${zoomLevelVideo.value}.mp4`;
+  }
+
   displayVideo.src = path;
   displayVideo.load();
 
-  // ▼ 追加：赤文字表示制御
-  const note = document.getElementById('velocityNoteVideo');
+  // ▼ ズームプルダウンと赤文字の表示制御
   if (varSel === 'SVel' || varSel === 'BVel') {
-    note.style.display = 'block';
+    zoomContainerVideo.style.display = 'block';
+    document.getElementById('velocityNoteVideo').style.display = 'block';
   } else {
-    note.style.display = 'none';
+    zoomContainerVideo.style.display = 'none';
+    document.getElementById('velocityNoteVideo').style.display = 'none';
   }
 }
 
 videoVar.onchange = updateVideo;
+zoomLevelVideo.onchange = updateVideo;
 
 // =========================
 // モード切り替え
