@@ -1,26 +1,66 @@
-[
-  {
-    "name": "BS",
-    "path": "mv/BS.mp4"
+{
+  "SSS": [
+    {
+      "path": "mv/SSS.mp4"
+    }
+  ],
+  "BS": [
+    {
+      "path": "mv/BS.mp4"
+    }
+  ],
+  "SST": [
+    {
+      "path": "mv/SST.mp4"
+    }
+  ],
+  "BT": [
+    {
+      "path": "mv/BT.mp4"
+    }
+  ],
+  "SVel": {
+    "z1": [
+      {
+        "path": "mv/SVel_z1.mp4"
+      }
+    ],
+    "z2": [
+      {
+        "path": "mv/SVel_z2.mp4"
+      }
+    ],
+    "z3": [
+      {
+        "path": "mv/SVel_z3.mp4"
+      }
+    ],
+    "z4": [
+      {
+        "path": "mv/SVel_z4.mp4"
+      }
+    ]
   },
-  {
-    "name": "BT",
-    "path": "mv/BT.mp4"
-  },
-  {
-    "name": "BVel",
-    "path": "mv/BVel.mp4"
-  },
-  {
-    "name": "SSS",
-    "path": "mv/SSS.mp4"
-  },
-  {
-    "name": "SST",
-    "path": "mv/SST.mp4"
-  },
-  {
-    "name": "SVel",
-    "path": "mv/SVel.mp4"
+  "BVel": {
+    "z1": [
+      {
+        "path": "mv/BVel_z1.mp4"
+      }
+    ],
+    "z2": [
+      {
+        "path": "mv/BVel_z2.mp4"
+      }
+    ],
+    "z3": [
+      {
+        "path": "mv/BVel_z3.mp4"
+      }
+    ],
+    "z4": [
+      {
+        "path": "mv/BVel_z4.mp4"
+      }
+    ]
   }
-]
+}
