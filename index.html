@@ -2,10 +2,18 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
 <style>
+
+<!-- WholeArea.png 表示	<div id="wholeArea"> に全体図を追加（タイトル直下） -->
+<!-- ズーム切替	JSONから自動取得した領域名を「表示エリア」としてプルダウン表示 -->
+<!-- 構成順序	「表示エリア」→「項目」→「日時」→「PREV/NEXT」順に整理 -->
+<!-- 同期動作	静止画／動画ともに同一JSON構造 {AreaX: {var: [path]}} に対応 -->
+<!-- 注記自動表示 SVel / BVel のみ赤矢印注記を表示 -->
+<!-- GitHub Pages互換	cache: 'no-store' により自動更新を常に反映 -->
+<!-- WholeArea.png は images/WholeArea.png に保存 -->
+
   body {
     font-family: "Segoe UI", Arial, sans-serif;
     background-color: #f8f9fa;
@@ -18,6 +26,17 @@
     padding: 1.2rem;
     font-size: 1.4rem;
     font-weight: bold;
+  }
+  #wholeArea {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  #wholeArea img {
+    width: 90%;
+    max-width: 800px;
+    height: auto;
+    border: 2px solid #ccc;
+    border-radius: 10px;
   }
   .container {
     margin: 1.5rem auto;
@@ -63,6 +82,11 @@
 <body>
 <header>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</header>
 
+<!-- WholeArea.png 表示 -->
+<div id="wholeArea">
+  <img src="images/WholeArea.png" alt="Whole Area Map">
+</div>
+
 <div class="container">
   <div id="mode-buttons">
     <button id="imageModeBtn" class="active">静止画像</button>
@@ -74,30 +98,21 @@
   <!-- ========================= -->
   <div id="imageMode">
     <div>
+      <label>表示エリア：</label>
+      <select id="zoomArea"></select><br>
+
       <label>項目：</label>
       <select id="imageVar">
-        <option value="SSS">SSS(Sea Surface Salinity)</option>
-        <option value="BS">BS(Bottom Salinity)</option>
-        <option value="SST">SST(Sea Surface Temperature)</option>
-        <option value="BT">BT(Bottom Temperature)</option>
-        <option value="SVel">SVel(Surface Current)</option>
-        <option value="BVel">BVel(Bottom Current)</option>
-      </select>
-      <br>
+        <option value="SSS">SSS (Sea Surface Salinity)</option>
+        <option value="BS">BS (Bottom Salinity)</option>
+        <option value="SST">SST (Sea Surface Temperature)</option>
+        <option value="BT">BT (Bottom Temperature)</option>
+        <option value="SVel">SVel (Surface Current)</option>
+        <option value="BVel">BVel (Bottom Current)</option>
+      </select><br>
+
       <label>日時：</label>
       <select id="imageTime"></select>
-      <br>
-
-      <!-- ズームレベル（SVel/BVel時のみ表示） -->
-      <div id="zoomContainer" style="display:none; margin-top:0.5rem;">
-        <label>ズームレベル：</label>
-        <select id="zoomLevel">
-          <option value="_z1">粗</option>
-          <option value="_z2">中</option>
-          <option value="_z3">細</option>
-          <option value="_z4">最密</option>
-        </select>
-      </div>
     </div>
 
     <div class="btn-group">
@@ -105,9 +120,8 @@
       <button id="nextBtn">NEXT</button>
     </div>
 
-    <!-- 静止画像＋注記 -->
     <div id="imageContainer" style="position:relative; display:flex; justify-content:center;">
-      <img id="displayImage" src="" alt="Sea Condition Image" style="max-width:100%; height:auto;">
+      <img id="displayImage" src="" alt="Sea Condition Image">
       <div id="velocityNoteImage"
            style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
         赤矢印は流速0.5m/s以上
@@ -120,31 +134,22 @@
   <!-- ========================= -->
   <div id="videoMode" style="display:none;">
     <div>
+      <label>表示エリア：</label>
+      <select id="zoomAreaVideo"></select><br>
+
       <label>項目：</label>
       <select id="videoVar">
-        <option value="SSS">SSS(Sea Surface Salinity)</option>
-        <option value="BS">BS(Bottom Salinity)</option>
-        <option value="SST">SST(Sea Surface Temperature)</option>
-        <option value="BT">BT(Bottom Temperature)</option>
-        <option value="SVel">SVel(Surface Current)</option>
-        <option value="BVel">BVel(Bottom Current)</option>
+        <option value="SSS">SSS (Sea Surface Salinity)</option>
+        <option value="BS">BS (Bottom Salinity)</option>
+        <option value="SST">SST (Sea Surface Temperature)</option>
+        <option value="BT">BT (Bottom Temperature)</option>
+        <option value="SVel">SVel (Surface Current)</option>
+        <option value="BVel">BVel (Bottom Current)</option>
       </select>
     </div>
 
-    <!-- ズームレベル（SVel/BVel時のみ表示） -->
-    <div id="zoomContainerVideo" style="display:none; margin-top:0.5rem;">
-      <label>ズームレベル：</label>
-      <select id="zoomLevelVideo">
-        <option value="_z1">粗</option>
-        <option value="_z2">中</option>
-        <option value="_z3">細</option>
-        <option value="_z4">最密</option>
-      </select>
-    </div>
-
-    <!-- 動画＋注記 -->
     <div id="videoContainer" style="position:relative; display:flex; justify-content:center;">
-      <video id="displayVideo" controls style="max-width:100%; height:auto;">
+      <video id="displayVideo" controls>
         <source src="" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -156,46 +161,50 @@
   </div>
 </div>
 
-<!-- ========================= -->
-<!-- スクリプト -->
-<!-- ========================= -->
 <script>
+let imageData = {};
+let videoData = {};
+
 const imageVar = document.getElementById('imageVar');
 const imageTime = document.getElementById('imageTime');
 const displayImage = document.getElementById('displayImage');
-const zoomContainer = document.getElementById('zoomContainer');
-const zoomLevel = document.getElementById('zoomLevel');
-let imageFiles = {};
+const zoomArea = document.getElementById('zoomArea');
 
-// JSON読み込み
-async function loadImageList() {
+async function loadJSON() {
   try {
-    const res = await fetch('image_list.json', { cache: 'no-store' });
-    imageFiles = await res.json();
+    const [imgRes, vidRes] = await Promise.all([
+      fetch('image_list.json', { cache: 'no-store' }),
+      fetch('video_list.json', { cache: 'no-store' })
+    ]);
+    imageData = await imgRes.json();
+    videoData = await vidRes.json();
+    populateZoomOptions();
     populateTimeOptions();
     registerImageEvents();
+    registerVideoEvents();
   } catch (e) {
-    console.warn('image_list.json not found. Please generate it.');
+    console.warn('JSON not found.');
   }
 }
 
-// 日時プルダウン更新
+function populateZoomOptions() {
+  zoomArea.innerHTML = '';
+  const areas = Object.keys(imageData);
+  areas.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a;
+    zoomArea.appendChild(opt);
+  });
+  document.getElementById('zoomAreaVideo').innerHTML = zoomArea.innerHTML;
+}
+
 function populateTimeOptions() {
   const varSel = imageVar.value;
-  if (!imageFiles[varSel]) return;
+  const areaSel = zoomArea.value;
+  if (!imageData[areaSel] || !imageData[areaSel][varSel]) return;
 
-  let entries = [];
-  if (varSel === 'SVel' || varSel === 'BVel') {
-    zoomContainer.style.display = 'block';
-    const zoomKey = zoomLevel.value ? zoomLevel.value.replace('_', '') : 'z1';
-    if (imageFiles[varSel][zoomKey]) {
-      entries = imageFiles[varSel][zoomKey];
-    }
-  } else {
-    zoomContainer.style.display = 'none';
-    entries = imageFiles[varSel];
-  }
-
+  const entries = imageData[areaSel][varSel];
   imageTime.innerHTML = '';
   entries.forEach(entry => {
     const opt = document.createElement('option');
@@ -203,11 +212,9 @@ function populateTimeOptions() {
     opt.textContent = entry.datetime;
     imageTime.appendChild(opt);
   });
-
   updateImage();
 }
 
-// 画像更新
 function updateImage() {
   const varSel = imageVar.value;
   const path = imageTime.value;
@@ -218,7 +225,6 @@ function updateImage() {
   note.style.display = (varSel === 'SVel' || varSel === 'BVel') ? 'block' : 'none';
 }
 
-// PREV/NEXT
 document.getElementById('prevBtn').onclick = () => shiftImage(-1);
 document.getElementById('nextBtn').onclick = () => shiftImage(1);
 function shiftImage(offset) {
@@ -230,46 +236,35 @@ function shiftImage(offset) {
   }
 }
 
-// イベント登録
 function registerImageEvents() {
   imageVar.onchange = populateTimeOptions;
+  zoomArea.onchange = populateTimeOptions;
   imageTime.onchange = updateImage;
-  zoomLevel.onchange = populateTimeOptions;
 }
 
-// =========================
-// 動画モード
-// =========================
+// 動画
 const videoVar = document.getElementById('videoVar');
 const displayVideo = document.getElementById('displayVideo');
-const zoomContainerVideo = document.getElementById('zoomContainerVideo');
-const zoomLevelVideo = document.getElementById('zoomLevelVideo');
+const zoomAreaVideo = document.getElementById('zoomAreaVideo');
 
 function updateVideo() {
   const varSel = videoVar.value;
-  let path = `mv/${varSel}.mp4`;
-  if ((varSel === 'SVel' || varSel === 'BVel') && zoomLevelVideo.value) {
-    path = `mv/${varSel}${zoomLevelVideo.value}.mp4`;
-  }
-  displayVideo.src = path;
+  const areaSel = zoomAreaVideo.value;
+  if (!videoData[areaSel] || !videoData[areaSel][varSel]) return;
+  const entry = videoData[areaSel][varSel][0];
+  if (!entry) return;
+  displayVideo.src = entry.path;
   displayVideo.load();
-
   const note = document.getElementById('velocityNoteVideo');
-  if (varSel === 'SVel' || varSel === 'BVel') {
-    zoomContainerVideo.style.display = 'block';
-    note.style.display = 'block';
-  } else {
-    zoomContainerVideo.style.display = 'none';
-    note.style.display = 'none';
-  }
+  note.style.display = (varSel === 'SVel' || varSel === 'BVel') ? 'block' : 'none';
 }
 
-videoVar.onchange = updateVideo;
-zoomLevelVideo.onchange = updateVideo;
+function registerVideoEvents() {
+  videoVar.onchange = updateVideo;
+  zoomAreaVideo.onchange = updateVideo;
+}
 
-// =========================
-// モード切り替え
-// =========================
+// モード切替
 const imageMode = document.getElementById('imageMode');
 const videoMode = document.getElementById('videoMode');
 const imageModeBtn = document.getElementById('imageModeBtn');
@@ -281,7 +276,6 @@ imageModeBtn.onclick = () => {
   imageModeBtn.classList.add('active');
   videoModeBtn.classList.remove('active');
 };
-
 videoModeBtn.onclick = () => {
   imageMode.style.display = 'none';
   videoMode.style.display = 'block';
@@ -289,13 +283,7 @@ videoModeBtn.onclick = () => {
   imageModeBtn.classList.remove('active');
 };
 
-// =========================
-// 初期化
-// =========================
-window.addEventListener('DOMContentLoaded', () => {
-  loadImageList();
-  updateVideo();
-});
+window.addEventListener('DOMContentLoaded', () => loadJSON());
 </script>
 </body>
 </html>
