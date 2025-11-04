@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</title>
+<title>PREDICTION of SEA CONDITION in ARIAKE & YATSUSHIRO SEA by UCHI</title>
 <style>
 
 <!-- WholeArea.png 表示	<div id="wholeArea"> に全体図を追加（タイトル直下） -->
@@ -27,7 +27,12 @@
     font-size: 1.4rem;
     font-weight: bold;
   }
+  
+  /* WholeArea.png を中央に配置 */
   #wholeArea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 1rem;
     margin-bottom: 1rem;
   }
@@ -55,10 +60,19 @@
     border: 2px solid #ccc;
     border-radius: 10px;
     background: white;
+     display: block;
+    margin: 0 auto; /* 中央寄せ */
   }
+  
   .btn-group {
     margin-top: 0.8rem;
+    text-align: center; /* PREV / NEXT を中央に配置 */
   }
+
+ #mode-buttons {
+    text-align: center;
+  }
+
   #mode-buttons button {
     background-color: #007bff;
     color: white;
@@ -71,6 +85,27 @@
   #mode-buttons button.active {
     background-color: #0056b3;
   }
+
+/* 静止画像・動画のコンテナを中央寄せ */
+  #imageContainer, #videoContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+ /* 流速注記位置調整 */
+  #velocityNoteImage, #velocityNoteVideo {
+    position: absolute;
+    top: 30px;
+    right: 90px;
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+  }
+
   @media (max-width: 600px) {
     #velocityNoteImage, #velocityNoteVideo {
       font-size: 12px;
@@ -103,12 +138,12 @@
 
       <label>項目：</label>
       <select id="imageVar">
-        <option value="SSS">SSS (Sea Surface Salinity)</option>
-        <option value="BS">BS (Bottom Salinity)</option>
-        <option value="SST">SST (Sea Surface Temperature)</option>
-        <option value="BT">BT (Bottom Temperature)</option>
-        <option value="SVel">SVel (Surface Current)</option>
-        <option value="BVel">BVel (Bottom Current)</option>
+        <option value="SSS">Sea Surface Salinity</option>
+        <option value="BS">Bottom Salinity</option>
+        <option value="SST">Sea Surface Temperature</option>
+        <option value="BT">Bottom Temperature</option>
+        <option value="SVel">Surface Current</option>
+        <option value="BVel">Bottom Current</option>
       </select><br>
 
       <label>日時：</label>
@@ -139,12 +174,12 @@
 
       <label>項目：</label>
       <select id="videoVar">
-        <option value="SSS">SSS (Sea Surface Salinity)</option>
-        <option value="BS">BS (Bottom Salinity)</option>
-        <option value="SST">SST (Sea Surface Temperature)</option>
-        <option value="BT">BT (Bottom Temperature)</option>
-        <option value="SVel">SVel (Surface Current)</option>
-        <option value="BVel">BVel (Bottom Current)</option>
+        <option value="SSS">Sea Surface Salinity</option>
+        <option value="BS">Bottom Salinity</option>
+        <option value="SST">Sea Surface Temperature</option>
+        <option value="BT">Bottom Temperature</option>
+        <option value="SVel">Surface Current</option>
+        <option value="BVel">Bottom Current</option>
       </select>
     </div>
 
