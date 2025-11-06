@@ -6,13 +6,13 @@
 <title>PREDICTION of SEA CONDITION in ARIAKE & YATSUSHIRO SEA by UCHI</title>
 <style>
 
-<!-- WholeArea.png •\¦	<div id="wholeArea"> ‚É‘S‘Ì}‚ğ’Ç‰Áiƒ^ƒCƒgƒ‹’¼‰ºj -->
-<!-- ƒY[ƒ€Ø‘Ö	JSON‚©‚ç©“®æ“¾‚µ‚½—Ìˆæ–¼‚ğu•\¦ƒGƒŠƒAv‚Æ‚µ‚Äƒvƒ‹ƒ_ƒEƒ“•\¦ -->
-<!-- \¬‡˜	u•\¦ƒGƒŠƒAv¨u€–Úv¨u“úv¨uPREV/NEXTv‡‚É®— -->
-<!-- “¯Šú“®ì	Ã~‰æ^“®‰æ‚Æ‚à‚É“¯ˆêJSON\‘¢ {AreaX: {var: [path]}} ‚É‘Î‰ -->
-<!-- ’‹L©“®•\¦ SVel / BVel ‚Ì‚İÔ–îˆó’‹L‚ğ•\¦ -->
-<!-- GitHub PagesŒİŠ·	cache: 'no-store' ‚É‚æ‚è©“®XV‚ğí‚É”½‰f -->
-<!-- WholeArea.png ‚Í images/WholeArea.png ‚É•Û‘¶ -->
+<!-- WholeArea.png è¡¨ç¤º	<div id="wholeArea"> ã«å…¨ä½“å›³ã‚’è¿½åŠ ï¼ˆã‚¿ã‚¤ãƒˆãƒ«ç›´ä¸‹ï¼‰ -->
+<!-- ã‚ºãƒ¼ãƒ åˆ‡æ›¿	JSONã‹ã‚‰è‡ªå‹•å–å¾—ã—ãŸé ˜åŸŸåã‚’ã€Œè¡¨ç¤ºã‚¨ãƒªã‚¢ã€ã¨ã—ã¦ãƒ—ãƒ«ãƒ€ã‚¦ãƒ³è¡¨ç¤º -->
+<!-- æ§‹æˆé †åº	ã€Œè¡¨ç¤ºã‚¨ãƒªã‚¢ã€â†’ã€Œé …ç›®ã€â†’ã€Œæ—¥æ™‚ã€â†’ã€ŒPREV/NEXTã€é †ã«æ•´ç† -->
+<!-- åŒæœŸå‹•ä½œ	é™æ­¢ç”»ï¼å‹•ç”»ã¨ã‚‚ã«åŒä¸€JSONæ§‹é€  {AreaX: {var: [path]}} ã«å¯¾å¿œ -->
+<!-- æ³¨è¨˜è‡ªå‹•è¡¨ç¤º SVel / BVel ã®ã¿èµ¤çŸ¢å°æ³¨è¨˜ã‚’è¡¨ç¤º -->
+<!-- GitHub Pagesäº’æ›	cache: 'no-store' ã«ã‚ˆã‚Šè‡ªå‹•æ›´æ–°ã‚’å¸¸ã«åæ˜  -->
+<!-- WholeArea.png ã¯ images/WholeArea.png ã«ä¿å­˜ -->
 
   body {
     font-family: "Segoe UI", Arial, sans-serif;
@@ -28,7 +28,7 @@
     font-weight: bold;
   }
   
-  /* WholeArea.png ‚ğ’†‰›‚É”z’u */
+  /* WholeArea.png ã‚’ä¸­å¤®ã«é…ç½® */
   #wholeArea {
     display: flex;
     justify-content: center;
@@ -61,12 +61,12 @@
     border-radius: 10px;
     background: white;
      display: block;
-    margin: 0 auto; /* ’†‰›Šñ‚¹ */
+    margin: 0 auto; /* ä¸­å¤®å¯„ã› */
   }
   
   .btn-group {
     margin-top: 0.8rem;
-    text-align: center; /* PREV / NEXT ‚ğ’†‰›‚É”z’u */
+    text-align: center; /* PREV / NEXT ã‚’ä¸­å¤®ã«é…ç½® */
   }
 
  #mode-buttons {
@@ -86,7 +86,7 @@
     background-color: #0056b3;
   }
 
-/* Ã~‰æ‘œE“®‰æ‚ÌƒRƒ“ƒeƒi‚ğ’†‰›Šñ‚¹ */
+/* é™æ­¢ç”»åƒãƒ»å‹•ç”»ã®ã‚³ãƒ³ãƒ†ãƒŠã‚’ä¸­å¤®å¯„ã› */
   #imageContainer, #videoContainer {
     position: relative;
     display: flex;
@@ -95,7 +95,7 @@
     margin-top: 1rem;
   }
 
- /* —¬‘¬’‹LˆÊ’u’²® */
+ /* æµé€Ÿæ³¨è¨˜ä½ç½®èª¿æ•´ */
   #velocityNoteImage, #velocityNoteVideo {
     position: absolute;
     top: 30px;
@@ -117,26 +117,26 @@
 <body>
 <header>PREDICTION of SEA CONDITIONS by UCHI in ARIAKE & YATSUSHIRO SEA</header>
 
-<!-- WholeArea.png •\¦ -->
+<!-- WholeArea.png è¡¨ç¤º -->
 <div id="wholeArea">
   <img src="images/WholeArea.png" alt="Whole Area Map">
 </div>
 
 <div class="container">
   <div id="mode-buttons">
-    <button id="imageModeBtn" class="active">Ã~‰æ‘œ</button>
-    <button id="videoModeBtn">“®‰æ</button>
+    <button id="imageModeBtn" class="active">é™æ­¢ç”»åƒ</button>
+    <button id="videoModeBtn">å‹•ç”»</button>
   </div>
 
   <!-- ========================= -->
-  <!-- Ã~‰æ‘œƒ‚[ƒh -->
+  <!-- é™æ­¢ç”»åƒãƒ¢ãƒ¼ãƒ‰ -->
   <!-- ========================= -->
   <div id="imageMode">
     <div>
-      <label>ƒGƒŠƒAF</label>
+      <label>ã‚¨ãƒªã‚¢ï¼š</label>
       <select id="zoomArea"></select><br>
 
-      <label>€–Ú@F</label>
+      <label>é …ç›®ã€€ï¼š</label>
       <select id="imageVar">
         <option value="SSS">Sea Surface Salinity</option>
         <option value="BS">Bottom Salinity</option>
@@ -146,7 +146,7 @@
         <option value="BVel">Bottom Current</option>
       </select><br>
 
-      <label>“ú@F</label>
+      <label>æ—¥æ™‚ã€€ï¼š</label>
       <select id="imageTime"></select>
     </div>
 
@@ -159,20 +159,20 @@
       <img id="displayImage" src="" alt="Sea Condition Image">
       <div id="velocityNoteImage"
            style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-        Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
+        èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
       </div>
     </div>
   </div>
 
   <!-- ========================= -->
-  <!-- “®‰æƒ‚[ƒh -->
+  <!-- å‹•ç”»ãƒ¢ãƒ¼ãƒ‰ -->
   <!-- ========================= -->
   <div id="videoMode" style="display:none;">
     <div>
-      <label>•\¦ƒGƒŠƒAF</label>
+      <label>è¡¨ç¤ºã‚¨ãƒªã‚¢ï¼š</label>
       <select id="zoomAreaVideo"></select><br>
 
-      <label>€–ÚF</label>
+      <label>é …ç›®ï¼š</label>
       <select id="videoVar">
         <option value="SSS">Sea Surface Salinity</option>
         <option value="BS">Bottom Salinity</option>
@@ -190,7 +190,7 @@
       </video>
       <div id="velocityNoteVideo"
            style="position:absolute; top:30px; right:90px; color:red; font-size:14px; font-weight:bold; display:none;">
-        Ô–îˆó‚Í—¬‘¬0.5m/sˆÈã
+        èµ¤çŸ¢å°ã¯æµé€Ÿ0.5m/sä»¥ä¸Š
       </div>
     </div>
   </div>
@@ -277,7 +277,7 @@ function registerImageEvents() {
   imageTime.onchange = updateImage;
 }
 
-// “®‰æ
+// å‹•ç”»
 const videoVar = document.getElementById('videoVar');
 const displayVideo = document.getElementById('displayVideo');
 const zoomAreaVideo = document.getElementById('zoomAreaVideo');
@@ -299,7 +299,7 @@ function registerVideoEvents() {
   zoomAreaVideo.onchange = updateVideo;
 }
 
-// ƒ‚[ƒhØ‘Ö
+// ãƒ¢ãƒ¼ãƒ‰åˆ‡æ›¿
 const imageMode = document.getElementById('imageMode');
 const videoMode = document.getElementById('videoMode');
 const imageModeBtn = document.getElementById('imageModeBtn');
