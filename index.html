@@ -24,7 +24,7 @@
     background: linear-gradient(90deg, #004e92, #000428);
     color: white;
     padding: 1.2rem;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
   }
 
@@ -222,12 +222,12 @@ let videoData = {};
 
 /* ▼▼▼ ここでエリアごとの注記位置を定義 ▼▼▼ */
 const velocityNotePositions = {
-  "Area1": { top: "320px", left: "10px" },
-  "Area2": { top: "370px", left: "10px" },
-  "Area3": { top: "310px", left: "10px" },
-  "Area4": { top: "310px", left: "10px" },
-  "Area5": { top: "310px", left: "10px" },
-  "WholeArea": { top: "245px", left: "10px" }
+  "Area1": { top: "340px", left: "10px" },
+  "Area2": { top: "390px", left: "10px" },
+  "Area3": { top: "300px", left: "10px" },
+  "Area4": { top: "330px", left: "10px" },
+  "Area5": { top: "290px", left: "10px" },
+  "WholeArea": { top: "390px", left: "10px" }
 };
 /* ▲▲▲ 必要に応じて自由に追加・変更可 ▲▲▲ */
 
@@ -386,7 +386,7 @@ document.getElementById("videoModeBtn").onclick = () => {
 
 document.getElementById("contactBtn").onclick = () => {
   const email = "oceanloversy@gmail.com";  // ←変更可能
-  const subject = encodeURIComponent("UCHI-AWBによる予測結果に関する問い合わせ");
+  const subject = encodeURIComponent("UCHI-AYSによる予測結果に関する問い合わせ");
   const body = encodeURIComponent("所属：\nお名前：\n問い合わせ内容：\n");
 
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
