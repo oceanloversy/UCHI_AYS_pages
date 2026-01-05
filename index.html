@@ -667,7 +667,7 @@ function initOrientation() {
     typeof DeviceOrientationEvent.requestPermission === "function"
   ) {
     // iOS：ユーザー操作が必須
-    document.body.addEventListener("click", () => {
+    document.body.addEventListener("pointerdown", () => {
       DeviceOrientationEvent.requestPermission()
         .then(state => {
           if (state === "granted") {
@@ -725,6 +725,7 @@ function handleOrientation(e) {
   }
 
   latestHeading = heading;
+  lastHeading = null; // ★ 追加：初期固着防止
 }
 
 function animate() {
@@ -748,6 +749,14 @@ function smoothHeading(deg) {
     lastHeading = deg;
     return deg;
   }
+
+function updateArrow(heading) {
+  currentHeading = heading;
+
+  // 矢印を回転（北＝上）
+  directionArrow.style.transform =
+    `translate(-50%, -50%) rotate(${heading}deg)`;
+}
 
   // 角度差（-180〜180）
   let delta = deg - lastHeading;
