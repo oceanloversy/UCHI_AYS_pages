@@ -679,18 +679,45 @@ function initOrientation() {
 
   } else {
     // Android / PC
-    window.addEventListener("deviceorientation", handleOrientation);
+    window.addEventListener("deviceorientationabsolute", handleOrientation, true);
+    window.addEventListener("deviceorientation", handleOrientation, true);
   }
 }
 
-function handleOrientation(e) {
-  if (e.alpha === null) return;
+let filteredHeading = null;
+const SMOOTHING = 0.15;
+const HEADING_OFFSET = 0; // 必要なら調整
 
-  // alpha は時計回りなので符号反転
-  currentHeading = e.alpha;
+function handleOrientation(e) {
+  let heading = null;
+
+  // iOS Safari
+  if (typeof e.webkitCompassHeading === "number") {
+    heading = e.webkitCompassHeading;
+
+  // Android absolute
+  } else if (e.absolute === true && e.alpha !== null) {
+    heading = 360 - e.alpha;
+
+  // fallback
+  } else if (e.alpha !== null) {
+    heading = 360 - e.alpha;
+  }
+
+  if (heading === null) return;
+
+  // 正規化
+  heading = (heading + HEADING_OFFSET + 360) % 360;
+
+  // スムージング
+  if (filteredHeading === null) {
+    filteredHeading = heading;
+  } else {
+    filteredHeading += SMOOTHING * (heading - filteredHeading);
+  }
 
   directionArrow.style.transform =
-    `rotate(${-currentHeading}deg)`;
+    `rotate(${filteredHeading}deg)`;
 }
 
  
