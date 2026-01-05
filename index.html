@@ -661,17 +661,17 @@ function updateMarker(lat, lon){
 }
 
 function initOrientation() {
-  // iOS 対応
+
   if (
     typeof DeviceOrientationEvent !== "undefined" &&
     typeof DeviceOrientationEvent.requestPermission === "function"
   ) {
-    // ユーザー操作が必要
+    // iOS：ユーザー操作が必須
     document.body.addEventListener("click", () => {
       DeviceOrientationEvent.requestPermission()
         .then(state => {
           if (state === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation);
+            startOrientationListeners();
           }
         })
         .catch(console.error);
@@ -679,10 +679,26 @@ function initOrientation() {
 
   } else {
     // Android / PC
-    window.addEventListener("deviceorientationabsolute", handleOrientation, true);
-    window.addEventListener("deviceorientation", handleOrientation, true);
+    startOrientationListeners();
   }
 }
+
+function startOrientationListeners() {
+  // absolute を優先
+  window.addEventListener(
+    "deviceorientationabsolute",
+    handleOrientation,
+    true
+  );
+
+  // fallback
+  window.addEventListener(
+    "deviceorientation",
+    handleOrientation,
+    true
+  );
+}
+
 
 let filteredHeading = null;
 const SMOOTHING = 0.15;
