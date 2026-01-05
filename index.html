@@ -714,19 +714,19 @@ const HEADING_OFFSET = 0; // 必要なら調整
 let latestHeading = null;
 
 function handleOrientation(e) {
-  let heading;
+  let heading = null;
 
   if (typeof e.webkitCompassHeading === "number") {
-    heading = e.webkitCompassHeading;
+    heading = e.webkitCompassHeading; // iOS
   } else if (e.alpha != null) {
-    heading = 360 - e.alpha;
-  } else {
-    return;
+    heading = 360 - e.alpha;          // Android
   }
 
+  if (heading == null || isNaN(heading)) return;
+
   latestHeading = heading;
-  lastHeading = null; // ★ 追加：初期固着防止
 }
+
 
 function animate() {
   if (latestHeading !== null) {
@@ -750,19 +750,9 @@ function smoothHeading(deg) {
     return deg;
   }
 
-function updateArrow(heading) {
-  currentHeading = heading;
-
-  // 矢印を回転（北＝上）
-  directionArrow.style.transform =
-    `translate(-50%, -50%) rotate(${heading}deg)`;
-}
-
-  // 角度差（-180〜180）
   let delta = deg - lastHeading;
   delta = ((delta + 540) % 360) - 180;
 
-  // 回転量に応じてスムージング切替
   const S = Math.abs(delta) > TURN_THRESHOLD
     ? SMOOTHING_HIGH
     : SMOOTHING_LOW;
@@ -776,6 +766,14 @@ function updateArrow(heading) {
   lastHeading = smoothed;
   return smoothed;
 }
+
+/* ★ 必ず外に出す */
+function updateArrow(heading) {
+  currentHeading = heading;
+  directionArrow.style.transform =
+    `translate(-50%, -50%) rotate(${heading}deg)`;
+}
+
 
  
 /* ===== 画像ロード後に再計算 ===== */
