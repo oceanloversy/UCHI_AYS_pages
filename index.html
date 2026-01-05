@@ -726,16 +726,25 @@ function handleOrientation(e) {
   heading = (heading + HEADING_OFFSET + 360) % 360;
 
   // スムージング
-  if (filteredHeading === null) {
-    filteredHeading = heading;
-  } else {
-    filteredHeading += SMOOTHING * (heading - filteredHeading);
-  }
-
-  directionArrow.style.transform =
-    `rotate(${filteredHeading}deg)`;
+  heading = smoothHeading(heading);
+  updateArrow(heading);
 }
 
+function smoothHeading(deg) {
+  const rad = deg * Math.PI / 180;
+  const x = Math.cos(rad);
+  const y = Math.sin(rad);
+
+  if (smoothX === null) {
+    smoothX = x;
+    smoothY = y;
+  } else {
+    smoothX = smoothX * (1 - SMOOTHING) + x * SMOOTHING;
+    smoothY = smoothY * (1 - SMOOTHING) + y * SMOOTHING;
+  }
+
+  return (Math.atan2(smoothY, smoothX) * 180 / Math.PI + 360) % 360;
+}
  
 /* ===== 画像ロード後に再計算 ===== */
 displayImage.onload = () => {
