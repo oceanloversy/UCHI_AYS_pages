@@ -704,10 +704,10 @@ let smoothX = null;
 let smoothY = null;
 let lastHeading = null;
 
-const SMOOTHING_LOW = 0.05;  // 微小回転
-const SMOOTHING_HIGH = 0.4;  // 大きな回転
-const TURN_THRESHOLD = 15;   // deg
+const DEADZONE = 2.0;        // deg：これ未満の変化は無視
+const SMOOTHING = 0.15;     // 固定スムージング（0.1〜0.2）
 
+  
 let filteredHeading = null;
 const HEADING_OFFSET = 0; // 必要なら調整
 
@@ -739,32 +739,25 @@ function animate() {
 animate();
 
 function smoothHeading(deg) {
-  const rad = deg * Math.PI / 180;
-  const x = Math.cos(rad);
-  const y = Math.sin(rad);
-
-  if (smoothX === null) {
-    smoothX = x;
-    smoothY = y;
+  if (lastHeading === null) {
     lastHeading = deg;
     return deg;
   }
 
+  // 角度差（-180〜180）
   let delta = deg - lastHeading;
   delta = ((delta + 540) % 360) - 180;
 
-  const S = Math.abs(delta) > TURN_THRESHOLD
-    ? SMOOTHING_HIGH
-    : SMOOTHING_LOW;
+  // ★ デッドゾーン
+  if (Math.abs(delta) < DEADZONE) {
+    return lastHeading;
+  }
 
-  smoothX = smoothX * (1 - S) + x * S;
-  smoothY = smoothY * (1 - S) + y * S;
+  // ★ 固定スムージング
+  const smoothed = lastHeading + delta * SMOOTHING;
+  lastHeading = (smoothed + 360) % 360;
 
-  const smoothed =
-    (Math.atan2(smoothY, smoothX) * 180 / Math.PI + 360) % 360;
-
-  lastHeading = smoothed;
-  return smoothed;
+  return lastHeading;
 }
 
 /* ★ 必ず外に出す */
