@@ -700,35 +700,42 @@ function startOrientationListeners() {
 }
 
 
+let smoothX = null;
+let smoothY = null;
+let lastHeading = null;
+
+const SMOOTHING_LOW = 0.05;  // 微小回転
+const SMOOTHING_HIGH = 0.4;  // 大きな回転
+const TURN_THRESHOLD = 15;   // deg
+
 let filteredHeading = null;
-const SMOOTHING = 0.15;
 const HEADING_OFFSET = 0; // 必要なら調整
 
-function handleOrientation(e) {
-  let heading = null;
+let latestHeading = null;
 
-  // iOS Safari
+function handleOrientation(e) {
+  let heading;
+
   if (typeof e.webkitCompassHeading === "number") {
     heading = e.webkitCompassHeading;
-
-  // Android absolute
-  } else if (e.absolute === true && e.alpha !== null) {
+  } else if (e.alpha != null) {
     heading = 360 - e.alpha;
-
-  // fallback
-  } else if (e.alpha !== null) {
-    heading = 360 - e.alpha;
+  } else {
+    return;
   }
 
-  if (heading === null) return;
-
-  // 正規化
-  heading = (heading + HEADING_OFFSET + 360) % 360;
-
-  // スムージング
-  heading = smoothHeading(heading);
-  updateArrow(heading);
+  latestHeading = heading;
 }
+
+function animate() {
+  if (latestHeading !== null) {
+    const h = smoothHeading(latestHeading);
+    updateArrow(h);
+  }
+  requestAnimationFrame(animate);
+}
+
+animate();
 
 function smoothHeading(deg) {
   const rad = deg * Math.PI / 180;
@@ -738,13 +745,29 @@ function smoothHeading(deg) {
   if (smoothX === null) {
     smoothX = x;
     smoothY = y;
-  } else {
-    smoothX = smoothX * (1 - SMOOTHING) + x * SMOOTHING;
-    smoothY = smoothY * (1 - SMOOTHING) + y * SMOOTHING;
+    lastHeading = deg;
+    return deg;
   }
 
-  return (Math.atan2(smoothY, smoothX) * 180 / Math.PI + 360) % 360;
+  // 角度差（-180〜180）
+  let delta = deg - lastHeading;
+  delta = ((delta + 540) % 360) - 180;
+
+  // 回転量に応じてスムージング切替
+  const S = Math.abs(delta) > TURN_THRESHOLD
+    ? SMOOTHING_HIGH
+    : SMOOTHING_LOW;
+
+  smoothX = smoothX * (1 - S) + x * S;
+  smoothY = smoothY * (1 - S) + y * S;
+
+  const smoothed =
+    (Math.atan2(smoothY, smoothX) * 180 / Math.PI + 360) % 360;
+
+  lastHeading = smoothed;
+  return smoothed;
 }
+
  
 /* ===== 画像ロード後に再計算 ===== */
 displayImage.onload = () => {
