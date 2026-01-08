@@ -278,7 +278,7 @@ footer {
   <img id="imageColorbar" class="colorbar" src="">
  
   <div id="imageVelocityNote" class="velocity-note">
-    赤矢印は流速0.5m/s以上
+    緑の矢印は流速0.5m/s以上
   </div>
 
   <div>
@@ -308,7 +308,7 @@ footer {
   <img id="videoColorbar" class="colorbar" src="">
 
   <div id="videoVelocityNote" class="velocity-note">
-    赤矢印は流速0.5m/s以上
+    緑の矢印は流速0.5m/s以上
   </div>
 
   <div>
@@ -661,17 +661,17 @@ function updateMarker(lat, lon){
 }
 
 function initOrientation() {
-
+  // iOS 対応
   if (
     typeof DeviceOrientationEvent !== "undefined" &&
     typeof DeviceOrientationEvent.requestPermission === "function"
   ) {
-    // iOS：ユーザー操作が必須
-    document.body.addEventListener("pointerdown", () => {
+    // ユーザー操作が必要
+    document.body.addEventListener("click", () => {
       DeviceOrientationEvent.requestPermission()
         .then(state => {
           if (state === "granted") {
-            startOrientationListeners();
+            window.addEventListener("deviceorientation", handleOrientation);
           }
         })
         .catch(console.error);
@@ -679,94 +679,19 @@ function initOrientation() {
 
   } else {
     // Android / PC
-    startOrientationListeners();
+    window.addEventListener("deviceorientation", handleOrientation);
   }
 }
-
-function startOrientationListeners() {
-  // absolute を優先
-  window.addEventListener(
-    "deviceorientationabsolute",
-    handleOrientation,
-    true
-  );
-
-  // fallback
-  window.addEventListener(
-    "deviceorientation",
-    handleOrientation,
-    true
-  );
-}
-
-
-let smoothX = null;
-let smoothY = null;
-let lastHeading = null;
-
-const DEADZONE = 5.0;        // deg：これ未満の変化は無視
-const SMOOTHING = 0.2;     // 固定スムージング（0.1〜0.2）
-
-  
-let filteredHeading = null;
-const HEADING_OFFSET = 0; // 必要なら調整
-
-let latestHeading = null;
 
 function handleOrientation(e) {
-  let heading = null;
+  if (e.alpha === null) return;
 
-  if (typeof e.webkitCompassHeading === "number") {
-    heading = e.webkitCompassHeading; // iOS
-  } else if (e.alpha != null) {
-    heading = 360 - e.alpha;          // Android
-  }
+  // alpha は時計回りなので符号反転
+  currentHeading = e.alpha;
 
-  if (heading == null || isNaN(heading)) return;
-
-  latestHeading = heading;
-}
-
-
-function animate() {
-  if (latestHeading !== null) {
-    const h = smoothHeading(latestHeading);
-    updateArrow(h);
-  }
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-function smoothHeading(deg) {
-  if (lastHeading === null) {
-    lastHeading = deg;
-    return deg;
-  }
-
-  // 角度差（-180〜180）
-  let delta = deg - lastHeading;
-  delta = ((delta + 540) % 360) - 180;
-
-  // ★ デッドゾーン
-  if (Math.abs(delta) < DEADZONE) {
-    return lastHeading;
-  }
-
-  // ★ 固定スムージング
-  const smoothed = lastHeading + delta * SMOOTHING;
-  lastHeading = (smoothed + 360) % 360;
-
-  return lastHeading;
-}
-
-/* ★ 必ず外に出す */
-function updateArrow(heading) {
-  currentHeading = heading;
   directionArrow.style.transform =
-    `translate(-50%, -50%) rotate(${heading}deg)`;
+    `rotate(${-currentHeading}deg)`;
 }
-
 
  
 /* ===== 画像ロード後に再計算 ===== */
@@ -802,7 +727,7 @@ window.addEventListener("resize", () => {
 /* ================== 問い合わせ ================== */
 contactBtn.onclick=()=>{
   const body=encodeURIComponent("問い合わせ内容：\n\n本ページに対する要望等：\n");
-  location.href=`mailto:oceanloversy@gmail.com?subject=UCHI_AWBに関する問い合わせ&body=${body}`;
+  location.href=`mailto:oceanloversy@gmail.com?subject=UCHI_AYTに関する問い合わせ&body=${body}`;
 };
 
 loadJSON();
